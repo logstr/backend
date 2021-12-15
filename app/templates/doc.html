@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Logstr - Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet">
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .hNbBJd{
+          display: none;
+        }
+        .sc-cKZHah {
+          top: 72px !important;
+        }
+        .sc-JooDp {
+          display: none !important;
+        }
+        .sc-eishCr {
+          top: 70px !important;
+          height: calc(-70px + 100vh) !important;
+        }
+        h3 {
+          margin-top: 10px !important;
+          font-size: 1rem !important;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="redoc-container"></div>
+    <script src="https://cdn.redoc.ly/reference-docs/latest/redocly-reference-docs.min.js"> </script>
+    <script>
+        RedoclyReferenceDocs.init('/api/swagger.json',
+        {
+            // licenseKey: 'orgsk_uBhwn0dmcO92J1Jx/DSLzwZi5Jg=_rIizSsblVSZrV9icpfoST0z6pgqlwudyNxwjy7EF4q8=',
+            scrollYOffset: 50,
+            showConsole: true,
+        }, document.getElementById('redoc-container'))
+    </script>
+  </body>
+</html>

@@ -1,1 +1,4 @@
+/migrations
 Pipfile.lock
+.env
+*.pyc
