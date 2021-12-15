@@ -9,15 +9,15 @@ from flask import current_app as app
 from flask import Blueprint, render_template, abort, request
 
 auth = Namespace('Authentication', \
-description='This contains data for the **user** and content belonging to the \
-application to be shared. The android and iOS application will make calls from \
-these endpoints. Tokens will be the method of security with two tokens, a  \
+description='This route authenticates a user and creates a token for user to keep logging into the system.\
+Tokens will contain some more data about the user that can be used to later on identify the user after authentication is completed  \
 refresh `token` ( **30 days span** ) and a normal token ( **7 days** ) ', \
 path='/security')
 
 @auth.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirect', 400: 'Invalid Argument please check', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 'id': 'Specify the Id associated with the person' , 
-    'name': 'Specify the name associated with the person' }
+    params= { 
+        'id': 'Specify the Id associated with the person' , 
+        'name': 'Specify the name associated with the person' }
     )
 
 
@@ -63,10 +63,9 @@ class Login(Resource):
 
 @auth.route('/signup')
 class Signup(Resource):
-    @auth.doc(description='User enters their `username` and `number`.\
-         These credentials are sent to server and an **sms** is sent to the users phone. \
-             Only after the code sent in the sms is authenticated will the user account be created.')
-    #@auth.expect(schema.signupdata)
+    @auth.doc(description='User enters their `username` and `password`.\
+         These credentials are sent to server and a **token** is returned to the users after the account has been created.')
+    @auth.expect(schema.signupdata)
     @auth.vendor(
         {
             'x-codeSamples':
@@ -85,7 +84,6 @@ class Signup(Resource):
         postdata = request.get_json()
         username = postdata['username']
         usernumber = postdata['number']
-        business = postdata['bus_type'] or None
         existing_user = Users.query.filter_by(usernumber=usernumber).first()
         if existing_user is not None:
             return {
