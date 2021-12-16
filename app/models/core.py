@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 import enum
 
@@ -34,7 +35,7 @@ class Users (db.Model):
         self.uuid = uuid.uuid4().hex
         self.emailaddress = emailadress
         self.phone = phone
-        self.password = password
+        self.password = generate_password_hash(password)
         self.first_name = first_name
         self.last_name = last_name
         self.profile_pic = profile_pic
@@ -43,7 +44,9 @@ class Users (db.Model):
         self.organizations_id = organizations_id
         self.created_at = datetime.utcnow()
         
-
+    def verify_password(self, password):
+        return check_password_hash(self.password, password)
+        
     def __repr__(self):
         return '<User %r>' % self.emailaddress
 

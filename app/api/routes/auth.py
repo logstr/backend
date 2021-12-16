@@ -16,16 +16,16 @@ path='/security')
 
 @auth.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirect', 400: 'Invalid Argument please check', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 
-        'id': 'Specify the Id associated with the person' , 
-        'name': 'Specify the name associated with the person' }
+        'firstname': 'Firstname of the user' , 
+        'password': 'password of the user' }
     )
 
 
 @auth.route('/login')
 class Login(Resource):
-    @auth.doc(description='User enter their `number` and a `code` is sent via **sms** to that number. If an accoutn exist \
-        for that number, the code is then authenticated and if successfull the user proceeds to dashboard.')
-    #@auth.expect(schema.logindata)
+    @auth.doc(description='User enter their `firstname` or `email` and a `password`. If an account exist \
+        for that user, the user is then authenticated and if successfull the user `token` is generated')
+    @auth.expect(schema.logindata)
     @auth.vendor(
         {
             'x-codeSamples':
@@ -42,24 +42,44 @@ class Login(Resource):
         })
     def post(self):
         postdata = request.get_json()
-        usernumber = postdata['number']
-        code = postdata['verification_code'] if postdata.get('verification_code') is not None else None
-        authtoken = jwt.encode(
-            {
-                'user': 'logstr',
-                'number': 'logstr',
-                'exp': datetime.utcnow() + timedelta(days=30),
-                'iat': datetime.utcnow()
-            },
-            app.config.get('SECRET_KEY'),
-            algorithm='HS256'
-        )
-        string_token = str(authtoken)
-        return {
-            'result': 'Welcome logstr',
-            'token': string_token,
-            'status': 1
-        }, 201
+        if postdata:
+            firstname= postdata['first_name']
+            password = postdata['password']
+
+            user = Users.query.filter((Users.first_name == firstname.lower()) | (Users.email == firstname.lower())).first()
+            if user:
+                if user.verify_password(password):
+                    authtoken = jwt.encode(
+                        {
+                            'user': user.first_name,
+                            'uuid': user.uuid,
+                            'exp': datetime.utcnow() + timedelta(days=7),
+                            'iat': datetime.utcnow()
+                        },
+                        app.config.get('SECRET_KEY'),
+                        algorithm='HS256'
+                    )
+                    string_token = str(authtoken)
+                    return {
+                        'result': 'Welcome ' + user.first_name,
+                        'token': string_token,
+                        'status': True
+                    }, 201
+                else:
+                    return {
+                        'result': 'Please check password or username',
+                        'status': False
+                    }, 200
+            else:
+                return {
+                    'result': 'Please check password or username',
+                    'status': False
+                }, 200
+        else:
+            return {
+                'result': 'Invalid data',
+                'status': False
+            }, 200
 
 @auth.route('/signup')
 class Signup(Resource):
