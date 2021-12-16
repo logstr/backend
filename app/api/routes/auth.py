@@ -43,10 +43,10 @@ class Login(Resource):
     def post(self):
         postdata = request.get_json()
         if postdata:
-            firstname= postdata['first_name']
+            firstname= postdata['firstname']
             password = postdata['password']
 
-            user = Users.query.filter((Users.first_name == firstname.lower()) | (Users.email == firstname.lower())).first()
+            user = Users.query.filter((Users.first_name == firstname.lower()) | (Users.emailaddress == firstname.lower())).first()
             if user:
                 if user.verify_password(password):
                     authtoken = jwt.encode(
@@ -102,21 +102,32 @@ class Signup(Resource):
         })
     def post(self):
         postdata = request.get_json()
-        username = postdata['username']
-        usernumber = postdata['number']
-        existing_user = Users.query.filter_by(usernumber=usernumber).first()
-        if existing_user is not None:
+        if postdata:
+            firstname = postdata['firstname']
+            lastname = postdata['lastname']
+            email = postdata['email']
+            number = postdata['number']
+            password = postdata['password']
+            team = postdata['team'] if 'team' in postdata else None
+            organization = postdata['organization'] if 'organization' in postdata else None
+
+            existing_user = Users.query.filter_by(first_name=firstname).first()
+            if existing_user:
+                return {
+                    'result': 'Account already exist, please login',
+                    'status': False
+                }, 200
+            else:
+                user = Users(email, number, password, firstname, lastname, \
+                     profile_pic=None, update_at=None, teams_id=team, organizations_id=organization)
+                db.session.add(user)
+                db.session.commit()
             return {
-                'result': 'Account already exist, please login',
-                'status': 0
-            }, 301
+                'response': 'Account created successfully. Please proceed to login',
+                'status': True
+            }, 201
         else:
-            user = Users(username, usernumber=usernumber, email=None, ip_addr=None, \
-                verified=False, bio=None, profile_pic=None)
-            db.session.add(user)
-            db.session.commit()
-        return {
-            'response': 'Account created successfully. Please proceed to login',
-            'status': 1
-        }, 201   
-        
+            return {
+                'response': 'Invalid Data',
+                'status': False
+            }, 200
