@@ -12,7 +12,6 @@ from functools import wraps
 from app import db
 from werkzeug.datastructures import FileStorage
 import jwt
-from app.models import Users
 
 
 # API security
@@ -72,6 +71,7 @@ path='/')
 from . import schema
 from .routes import auth
 from .routes import heat
+from .routes import org
 
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
@@ -81,6 +81,7 @@ uploader.add_argument('name', location='form', type=str, required=True, help="Na
 
 apisec.add_namespace(auth)
 apisec.add_namespace(heat)
+apisec.add_namespace(org)
 
 # The token decorator to protect my routes
 def token_required(f):

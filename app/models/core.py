@@ -23,11 +23,9 @@ class Users (db.Model):
     ptofile_pic = db.Column(db.String(80))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
-    teams_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
-    organizations_id = db.Column(db.Integer, db.ForeignKey('organizations.id'))
 
-    teams = db.relationship('Teams', foreign_keys=teams_id)
-    organizations = db.relationship('Organizations', foreign_keys=organizations_id)
+    teams = db.relationship('Teams', backref='owner', lazy='dynamic')
+    organizations = db.relationship('Organizations', backref='owner', lazy='dynamic')
 
     def __init__(self, emailadress, phone, password, \
          first_name, last_name, profile_pic, update_at, \
@@ -57,11 +55,13 @@ class Organizations (db.Model):
     name = db.Column(db.String(30))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, name, update_at):
+    def __init__(self, name, update_at, user_id):
         self.uuid = uuid.uuid4().hex
         self.name = name
         self.updated_at = update_at
+        self.user_id = user_id
         self.created_at = datetime.utcnow()
         
 
@@ -77,15 +77,16 @@ class Teams (db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     organizations_id = db.Column(db.Integer, db.ForeignKey('organizations.id'))
     organizations = db.relationship('Organizations', foreign_keys=organizations_id)
 
-    def __init__(self, name, size, update_at, organizations, organization_id):
+    def __init__(self, name, size, update_at, user_id, organization_id):
         self.uuid = uuid.uuid4().hex
         self.name = name
         self.size = size
         self.updated_at = update_at
-        self.organizations = organizations
+        self.user_id = user_id
         self.organizations_id = organization_id
         self.created_at = datetime.utcnow()
         

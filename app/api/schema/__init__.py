@@ -24,9 +24,7 @@ signupdata = apisec.model('Signup', {
     'number': fields.String(max_length=30, example='+237650221486', \
         description='''User number without verification will send a verification code to user \
             user number with verification will authenticate the user.'''),
-    'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********'),
-    'team': fields.String(required=False, max_length=60, description='Team uuid provided by the response of api'),
-    'organization': fields.String(required=False, max_length=60, description='Organization uuid provided by api reponse'),
+    'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********')
 })
 
 sessiondata = apisec.model('Sessiondata', {
@@ -61,14 +59,16 @@ projectdata = apisec.model('Projectdata', {
 })
 
 teamdata = apisec.model('Teamdata', {
+    'uuid': fields.String(max_length=60, description='object if of the team'),
     'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='A-Team'),
     'size': fields.Integer,
-    'organizations': fields.String(max_length=30, description='Organization name provided by api reponse'),
+    'user_id': fields.String(max_length=30, description='Owner or creator of the team.'),
     'organization_id': fields.String(max_length=60, description='Organization uuid provided by api reponse'),
     'updated_at': fields.DateTime()
 })
 
 organizationdata = apisec.model('Organizationdata', {
+    'uuid': fields.String(max_length=60, description='object if of the organization'),
     'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='Acmecorp'),
     'updated_at': fields.DateTime()
 })
