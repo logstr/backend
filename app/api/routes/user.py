@@ -98,14 +98,14 @@ class Data(Resource):
         if postdata:
             first_name = postdata['first_name'] if 'first_name' in postdata else None
             last_name = postdata['last_name'] if 'last_name' in postdata else None
-            email = postdata['email'] if 'email' in postdata else None
-            number = postdata['number'] if 'number' in postdata else None
+            email = postdata['emailaddress'] if 'emailaddress' in postdata else None
+            number = postdata['phone'] if 'phone' in postdata else None
 
             if user:
                 user.first_name = first_name
                 user.last_name = last_name
-                user.email = email
-                user.number = number
+                user.emailaddress = email
+                user.phone = number
                 db.session.merge(user)
                 db.session.commit()
                 return {

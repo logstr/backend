@@ -28,10 +28,10 @@ signupdata = apisec.model('Signup', {
 })
 
 userdata = apisec.model('User', {
-    'firstname': fields.String(required=True, max_length=64, description='firstname of account or business name', example='john'),
-    'lastname': fields.String(required=True, max_length=64, description='lastname of account or business name', example='doe'),
-    'email': fields.String(max_length=64, description='user email associated for verification e.g john@acme.org', example='john@acme.org'),
-    'number': fields.String(max_length=30, example='+237650221486', \
+    'first_name': fields.String(required=True, max_length=64, description='firstname of account or business name', example='john'),
+    'last_name': fields.String(required=True, max_length=64, description='lastname of account or business name', example='doe'),
+    'emailaddress': fields.String(max_length=64, description='user email associated for verification e.g john@acme.org', example='john@acme.org'),
+    'phone': fields.String(max_length=30, example='+237650221486', \
         description='''User number without verification will send a verification code to user \
             user number with verification will authenticate the user.''')
 })
