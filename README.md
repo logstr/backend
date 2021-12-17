@@ -1,5 +1,6 @@
 [![Python](https://img.shields.io/badge/python-2.7%2C%203.5%2C%203.6--dev-blue.svg)]()
 [![Docker](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?maxAge=2592000)]()
+[![Time](https://img.shields.io/date/1639353600)]()
 
 # Logstr Api
 Logstr api is the api backend for the `logstr team`. It collects data from npm package linked on a website. It handles request authprization and authentication, data storage from heatmap.
