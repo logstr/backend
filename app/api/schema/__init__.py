@@ -27,6 +27,15 @@ signupdata = apisec.model('Signup', {
     'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********')
 })
 
+userdata = apisec.model('User', {
+    'firstname': fields.String(required=True, max_length=64, description='firstname of account or business name', example='john'),
+    'lastname': fields.String(required=True, max_length=64, description='lastname of account or business name', example='doe'),
+    'email': fields.String(max_length=64, description='user email associated for verification e.g john@acme.org', example='john@acme.org'),
+    'number': fields.String(max_length=30, example='+237650221486', \
+        description='''User number without verification will send a verification code to user \
+            user number with verification will authenticate the user.''')
+})
+
 sessiondata = apisec.model('Sessiondata', {
     'ip': fields.String(required=True, max_length=64, description='IP address of the session', example='154.0.0.24'),
     'xdata': fields.Integer,
@@ -37,17 +46,6 @@ sessiondata = apisec.model('Sessiondata', {
     'session_uuid': fields.String(required=True, max_length=60, description='Session uuid of the project'),
     'timestamp': fields.DateTime(),
     'event_info': fields.String(required=True, max_length=300, description='Organization uuid provided by api reponse')
-})
-
-sessiondata = apisec.model('Sessiondata', {
-    'ip': fields.String(required=True, max_length=64, description='IP address of the session', example='154.0.0.24'),
-    'device': fields.String(required=True, max_length=60, description='Platform on which the project is suppose to run'),
-    'startTime': fields.DateTime(),
-    'endTime': fields.DateTime(),
-    'project': fields.String(required=True, max_length=30, description='Project name provided by api reponse'),
-    'project_id': fields.String(required=True, max_length=60, description='Project uuid provided by api reponse'),
-    'navigator': fields.String(required=True, max_length=300, description='Organization uuid provided by api reponse'),
-    'team_id': fields.String(required=True, max_length=60, description='uuid of the Team who owns the project'),
 })
 
 projectdata = apisec.model('Projectdata', {

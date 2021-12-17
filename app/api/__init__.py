@@ -72,7 +72,7 @@ from . import schema
 from .routes import auth
 from .routes import heat
 from .routes import org
-
+from .routes import appuser
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
 uploader = apisec.parser()
@@ -82,6 +82,7 @@ uploader.add_argument('name', location='form', type=str, required=True, help="Na
 apisec.add_namespace(auth)
 apisec.add_namespace(heat)
 apisec.add_namespace(org)
+apisec.add_namespace(appuser)
 
 # The token decorator to protect my routes
 def token_required(f):
