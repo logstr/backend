@@ -14,7 +14,7 @@ Logstr api is the api backend for the `logstr team`. It collects data from npm p
 
 ## Getting started
 
-Install [Python](https://www.python.org/downloads/) and run code bellow. Otherwise, for the standalone web service:
+Install [Python](https://www.python.org/downloads/) and run code below, for the standalone web service:
 
 ```shell
 pipenv install -r requirements.txt

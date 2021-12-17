@@ -69,10 +69,9 @@ description='**Note:** This operation is only available if you have [Invoice\
 path='/')
 
 from . import schema
-from .routes import auth
-from .routes import heat
-from .routes import org
-from .routes import appuser
+from .routes import auth, heat, org, appuser, team
+
+
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
 uploader = apisec.parser()
@@ -83,6 +82,7 @@ apisec.add_namespace(auth)
 apisec.add_namespace(heat)
 apisec.add_namespace(org)
 apisec.add_namespace(appuser)
+apisec.add_namespace(team)
 
 # The token decorator to protect my routes
 def token_required(f):

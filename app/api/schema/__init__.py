@@ -56,12 +56,19 @@ projectdata = apisec.model('Projectdata', {
     'updated_at': fields.DateTime()
 })
 
+putteamdata = apisec.model('Putteamdata', {
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='A-Team'),
+    'size': fields.Integer,
+    'organization_id': fields.String(max_length=60, description='Organization uuid provided by api reponse'),
+    'updated_at': fields.DateTime()
+})
+
 teamdata = apisec.model('Teamdata', {
     'uuid': fields.String(max_length=60, description='object if of the team'),
     'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='A-Team'),
     'size': fields.Integer,
     'user_id': fields.String(max_length=30, description='Owner or creator of the team.'),
-    'organization_id': fields.String(max_length=60, description='Organization uuid provided by api reponse'),
+    'organizations_id': fields.String(max_length=60, description='Organization uuid provided by api reponse'),
     'updated_at': fields.DateTime()
 })
 

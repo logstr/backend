@@ -40,7 +40,7 @@ path='/user')
 @appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 'id': 'ID of the site to view heatmap data'})
 @appuser.route('/')
-class Data(Resource):
+class User(Resource):
     # get method
     @appuser.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
         return a particular useranization with that id else it will return all useranizations belonging to the user.')
@@ -155,3 +155,40 @@ class Data(Resource):
                 'result': 'No user specified',
                 'status': False
             }, 200
+
+
+@appuser.doc(security='KEY')
+@appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
+    params= { 'id': 'ID of the site to view heatmap data'})
+@appuser.route('/user/team')
+class Userteam(Resource):
+
+    @appuser.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
+        return a particular team with that id else it will return all teams belonging to the user.')
+    @appuser.marshal_with(schema.teamdata)
+    @appuser.vendor(
+        {
+            'x-codeSamples':
+            [
+                { 
+                    "lang": "JavaScript",
+                    "source": "console.log('Hello World');" 
+                },
+                { 
+                    "lang": "Curl",
+                    "source": "curl -X PUT -H "
+                }
+            ]
+        })
+    @token_required
+    def get(self):
+        id = request.args.get('id')
+        token = request.headers['auth-token']
+        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
+        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
+        if id:
+            team = user.teams.query.filter_by(uuid=id).first()
+            return team, 200
+        else:
+            team = user.teams.all()
+            return team, 200

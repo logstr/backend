@@ -40,7 +40,7 @@ path='/org')
 @org.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 'id': 'ID of the site to view heatmap data'})
 @org.route('/')
-class Data(Resource):
+class Organization(Resource):
     # get method
     @org.doc(description='This route is to get all or one of the organizarions from the db. Passing an id will \
         return a particular organization with that id else it will return all organizations belonging to the user.')
