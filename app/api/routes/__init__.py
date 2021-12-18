@@ -3,3 +3,4 @@ from .heatmap import *
 from .organization import *
 from .user import *
 from .team import *
+from .project import *

@@ -48,12 +48,25 @@ sessiondata = apisec.model('Sessiondata', {
     'event_info': fields.String(required=True, max_length=300, description='Organization uuid provided by api reponse')
 })
 
-projectdata = apisec.model('Projectdata', {
+putprojectdata = apisec.model('Putprojectdata', {
     'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='project-x'),
     'platform': fields.String(required=True, max_length=60, description='Platform on which the project is suppose to run'),
-    'team_id': fields.String(required=True, max_length=60, description='uuid of the Team who owns the project'),
-    'organization_id': fields.String(required=True, max_length=60, description='Organization uuid provided by api reponse'),
-    'updated_at': fields.DateTime()
+    'teams_id': fields.String(required=True, max_length=60, description='uuid of the Team who owns the project'),
+    'organizations_id': fields.String(required=True, max_length=60, description='Organization uuid provided by api reponse')
+})
+
+patchprojectdata = apisec.model('Patchprojectdata', {
+    'uuid': fields.String(max_length=60, description='object id of the project'),
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='project-x'),
+    'platform': fields.String(required=True, max_length=60, description='Platform on which the project is suppose to run')
+})
+
+projectdata = apisec.model('Projectdata', {
+    'uuid': fields.String(max_length=60, description='object id of the project'),
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='project-x'),
+    'platform': fields.String(max_length=60, description='Platform on which the project is suppose to run'),
+    'teams_id': fields.String(required=True, max_length=60, description='uuid of the Team who owns the project'),
+    'organizations_id': fields.String(required=True, max_length=60, description='Organization uuid provided by api reponse')
 })
 
 putteamdata = apisec.model('Putteamdata', {

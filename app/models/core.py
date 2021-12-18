@@ -79,6 +79,7 @@ class Teams (db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     organizations_id = db.Column(db.Integer, db.ForeignKey('organizations.id'))
+    projects = db.relationship('Projects', backref='owner', lazy='dynamic')
     organizations = db.relationship('Organizations', foreign_keys=organizations_id)
 
     def __init__(self, name, size, update_at, user_id, organization_id):
@@ -131,15 +132,14 @@ class Projects (db.Model):
     teams_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
     organizations_id = db.Column('organizations_id', db.Integer, db.ForeignKey('organizations.id'))
 
-    teams = db.relationship('Teams', foreign_keys=teams_id)
     organizations = db.relationship('Organizations', foreign_keys=organizations_id)
 
-    def __init__(self, name, platform, team_id, organization_id):
+    def __init__(self, name, appplatform, team_id, organization_id):
         self.uuid = uuid.uuid4().hex
         self.name = name
-        self.platform = platform
-        self.team_id = team_id
-        self.organization_id = organization_id
+        self.platform = appplatform
+        self.teams_id = team_id
+        self.organizations_id = organization_id
         self.created_at = datetime.utcnow()
         
 

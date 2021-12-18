@@ -22,7 +22,7 @@ pipenv install -r requirements.txt
 python logstr.py
 ```
 
--- Visit [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
+:balloon: Visit [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 
 To create models run the following command:
 
@@ -76,7 +76,6 @@ Integration and unit tests run with:
 ```shell
 docker-compose -f test.yml -p ci build
 docker-compose -f test.yml -p ci run test python -m pytest --cov=web/ tests
-# docker stop ci_redis_1 ci_web_1
 ```
 
 After testing, submit a pull request to merge changes with **master**.
