@@ -16,7 +16,7 @@ python-dateutil = "*"
 flask-socketio = "*"
 gunicorn = "*"
 gevent = "*"
-eventlet = "==0.28.0"
+eventlet = "==0.31.0"
 
 [dev-packages]
 
