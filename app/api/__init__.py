@@ -9,8 +9,9 @@ from flask_restplus import Api, Resource
 from flask import Blueprint, render_template, request
 from flask_cors import CORS
 from functools import wraps
-from app import db
+from app import db, sio
 from werkzeug.datastructures import FileStorage
+from flask_socketio import emit
 import jwt
 
 
@@ -71,6 +72,15 @@ path='/')
 from . import schema
 from .routes import auth, heat, org, appuser, team, project
 
+@sio.on('connect')
+def test_connect(auth):
+    emit('my response', {'data': 'Connected'})
+
+@sio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+
+
 
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
@@ -102,6 +112,7 @@ def token_required(f):
             pass
         return f(*args, **kwargs)
     return decorated
+
 
 @apisec.documentation
 def docs():
