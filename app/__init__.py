@@ -10,7 +10,7 @@ from flask_socketio import SocketIO
 
 db = SQLAlchemy()
 migrate = Migrate()
-sio = SocketIO()
+sio = SocketIO(logger=False, engineio_logger=False)
 
 def create_app(configname):
     """ Core create function app """
@@ -19,7 +19,7 @@ def create_app(configname):
 
     db.init_app(app)
     sio.init_app(app, cors_allowed_origins="*")
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, render_as_batch=True)
     CORS(app)
     
 

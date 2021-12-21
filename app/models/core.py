@@ -10,7 +10,6 @@ class logevents(enum.Enum):
     scroll = 'scroll'
     move = 'move'
 
-
 class Users (db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key = True)
@@ -66,7 +65,7 @@ class Organizations (db.Model):
         
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<Organization %r>' % self.name
 
 class Teams (db.Model):
     __tablename__ = "teams"
@@ -79,7 +78,6 @@ class Teams (db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     organizations_id = db.Column(db.Integer, db.ForeignKey('organizations.id'))
-    projects = db.relationship('Projects', backref='owner', lazy='dynamic')
     organizations = db.relationship('Organizations', foreign_keys=organizations_id)
 
     def __init__(self, name, size, update_at, user_id, organization_id):
@@ -93,7 +91,7 @@ class Teams (db.Model):
         
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<Team %r>' % self.name
 
 class Sessions (db.Model):
     __tablename__ = "sessions"
@@ -121,7 +119,7 @@ class Sessions (db.Model):
         
 
     def __repr__(self):
-        return '<User %r>' % self.uuid
+        return '<Session %r>' % self.uuid
 
 class Projects (db.Model):
     __tablename__ = "projects"
@@ -129,22 +127,22 @@ class Projects (db.Model):
     uuid = db.Column(db.String(60), unique=True)
     name = db.Column(db.String(60))
     platform = db.Column(db.String(60))
-    teams_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    admin = db.Column('admin', db.Integer, db.ForeignKey('users.id'))
     organizations_id = db.Column('organizations_id', db.Integer, db.ForeignKey('organizations.id'))
 
     organizations = db.relationship('Organizations', foreign_keys=organizations_id)
 
-    def __init__(self, name, appplatform, team_id, organization_id):
+    def __init__(self, name, appplatform, admin, organization_id):
         self.uuid = uuid.uuid4().hex
         self.name = name
+        self.admin = admin
         self.platform = appplatform
-        self.teams_id = team_id
         self.organizations_id = organization_id
         self.created_at = datetime.utcnow()
         
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<Project %r>' % self.name
 
 class Heatmaps (db.Model):
     __tablename__ = "heatmaps"
@@ -174,5 +172,48 @@ class Heatmaps (db.Model):
         
 
     def __repr__(self):
-        return '<User %r>' % self.uuid
+        return '<Heatmap %r>' % self.uuid
 
+class Views (db.Model):
+    __tablename__ = "views"
+    id = db.Column(db.Integer, primary_key = True)
+    uuid = db.Column(db.String(60), primary_key = True, unique=True)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+    title = db.Column(db.String(60))
+    slug = db.Column(db.String(500))
+    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
+    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
+    created_at = db.Column(db.DateTime)
+
+    def __init__(self, ip, device, startTime, endTime, title, slug):
+        self.uuid = uuid.uuid4().hex
+        self.start_time = startTime
+        self.end_time = endTime
+        self.title = title
+        self.slug = slug
+        self.created_at = datetime.utcnow()
+        
+
+    def __repr__(self):
+        return '<View %r>' % self.uuid
+
+class SessionUser (db.Model):
+    __tablename__ = "sessionuser"
+    id = db.Column(db.Integer, primary_key = True)
+    uuid = db.Column(db.String(60), primary_key = True, unique=True)
+    name = db.Column(db.String(60))
+    email = db.Column(db.String(60))
+    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
+    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
+    created_at = db.Column(db.DateTime)
+
+    def __init__(self, name, email):
+        self.uuid = uuid.uuid4().hex
+        self.name = name
+        self.email = email
+        self.created_at = datetime.utcnow()
+        
+
+    def __repr__(self):
+        return '<Sessionuser %r>' % self.uuid

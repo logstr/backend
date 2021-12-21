@@ -72,15 +72,6 @@ path='/')
 from . import schema
 from .routes import auth, heat, org, appuser, team, project
 
-@sio.on('connect')
-def test_connect(auth):
-    emit('my response', {'data': 'Connected'})
-
-@sio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected')
-
-
 
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
@@ -92,7 +83,7 @@ apisec.add_namespace(auth)
 apisec.add_namespace(heat)
 apisec.add_namespace(org)
 apisec.add_namespace(appuser)
-apisec.add_namespace(team)
+# apisec.add_namespace(team)
 apisec.add_namespace(project)
 
 # The token decorator to protect my routes

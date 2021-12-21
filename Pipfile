@@ -13,10 +13,10 @@ flask-restplus = "*"
 pyjwt = "*"
 werkzeug = "==0.16.1"
 python-dateutil = "*"
-flask-socketio = "*"
 gunicorn = "*"
 gevent = "*"
-eventlet = "==0.28.0"
+eventlet = "==0.31.0"
+flask-socketio = "==5.0.0"
 
 [dev-packages]
 

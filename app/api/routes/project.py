@@ -38,16 +38,16 @@ path='/project')
 
 
 @project.doc(security='KEY')
-@project.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 
-        'id': 'uuid of the project', 
-        'team' : 'Team uuid'
-    })
+@project.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
 @project.route('/')
 class Project(Resource):
     # get method
     @project.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
-        return a particular team with that id else it will return all teams belonging to the user.')
+        return a particular team with that id else it will return all teams belonging to the user.',
+        params= { 
+        'id': 'uuid of the project', 
+        'org' : 'Organization uuid'
+    })
     @project.marshal_with(schema.projectdata)
     @project.vendor(
         {
@@ -69,15 +69,14 @@ class Project(Resource):
         tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
         user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         id = request.args.get('id')
-        team = Teams.query.filter_by(uuid=request.args.get('team')).first()
-        if team:
+        organ = Organizations.query.filter_by(uuid=request.args.get('org')).first()
+        if organ:
+            orgproject = Organizations.query.filter((Organizations.uuid==organ.uuid) & (Organizations.user_id==user.id)).first()
             if id:
-                teamproject = Teams.query.filter((Teams.uuid==team.uuid) & (Teams.user_id==user.id)).first()
-                project = Projects.query.filter((Projects.teams_id==teamproject.id) & (Projects.uuid==id)).first()
+                project = Projects.query.filter_by(uuid=id).first()
                 return project, 200
             else:
-                teamproject =  Teams.query.filter((Teams.uuid==team.uuid) & (Teams.user_id==user.id)).first()
-                project = Projects.query.filter_by(teams_id=teamproject.id).all()
+                project = Projects.query.filter_by(organizations_id=orgproject.id).all()
                 return project, 200
         else:
            return {
@@ -111,16 +110,23 @@ class Project(Resource):
         if postdata:
             name = postdata['name']
             platform = postdata['platform'] if 'platform' in postdata else None
-            team = Teams.query.filter_by(uuid=postdata['team_id']).first()
-            organization = Organizations.query.filter((Organizations.uuid == postdata['organization_id']) & (Organizations.user_id == user.id)).first()
-            if team:
-                project = Projects(name, platform, team_id=team.id, organization_id=organization.id)
-                db.session.add(project)
-                db.session.commit()
-                return {
-                    'result': 'Project saved',
-                    'status': True
-                }, 200
+            organ = postdata['organizations_id'] if 'organizations_id' in postdata else None
+            organization = Organizations.query.filter((Organizations.uuid == organ) & (Organizations.user_id == user.id)).first()
+            if organization:
+                exproject = Projects.query.filter_by(name=name).first()
+                if exproject is None:
+                    project = Projects(name, platform, user.id, organization.id)
+                    db.session.add(project)
+                    db.session.commit()
+                    return {
+                        'result': 'Project saved',
+                        'status': True
+                    }, 200
+                else:
+                    return {
+                        'result': 'Project already exist',
+                        'status': False
+                    }, 200
             else:
                 return {
                     'result': 'Invalid Team or organization',
@@ -156,22 +162,17 @@ class Project(Resource):
             platform = postdata['platform']
 
             if id:
-                userteams = Teams.query.filter_by(user_id=user.id).all()
-                for team in userteams:
-                    teamproject = Projects.query.filter((Projects.uuid==id) & (Projects.teams_id==team.id)).first()
-                    if teamproject:
-                        teamproject.name = name
-                        teamproject.platform = platform
-                        db.session.merge(teamproject)
-                        db.session.commit()
-                        return {
-                            'result': 'Project updated',
-                            'status': True
-                        }, 200
-                else:
+                teamproject = Projects.query.filter((Projects.uuid==id) & \
+                    (Projects.admin==user.uuid) & \
+                        (Projects.name==name)).first()
+                if teamproject:
+                    teamproject.name = name
+                    teamproject.platform = platform
+                    db.session.merge(teamproject)
+                    db.session.commit()
                     return {
-                        'result': 'No Project found',
-                        'status': False
+                        'result': 'Project updated',
+                        'status': True
                     }, 200
             else:
                 return {
@@ -185,7 +186,11 @@ class Project(Resource):
 
     # delete method
     @project.doc(description='This route is to delete an team from the db. Passing an id will \
-        delete the particular team with that id else it will return an error.')
+        delete the particular team with that id else it will return an error.',
+        params= { 
+        'id': 'uuid of the project', 
+        'org' : 'Organization uuid'
+    })
     @project.vendor(
         {
             'x-codeSamples':
@@ -203,15 +208,18 @@ class Project(Resource):
     @token_required
     def delete(self):
         id = request.args.get('id')
+        orgs = request.args.get('org')
         token = request.headers['auth-token']
         tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
         user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         if id:
-            userteams = Teams.query.filter_by(user_id=user.id).all()
-            for team in userteams:
-                teamproject = Projects.query.filter((Projects.uuid==id) & (Projects.teams_id==team.id)).first()
-                if teamproject:
-                    db.session.delete(teamproject)
+            userorganizations = Organizations.query.filter_by(uuid=orgs).first()
+            if userorganizations:
+                orgproject = Projects.query.filter((Projects.uuid==id) & \
+                    (Projects.organizations_id==userorganizations.id) & \
+                        (Projects.admin==user.id)).first()
+                if orgproject:
+                    db.session.delete(orgproject)
                     db.session.commit()
                     return {
                         'result': 'Project removed',
