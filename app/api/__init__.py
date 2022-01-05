@@ -104,7 +104,6 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-
 @apisec.documentation
 def docs():
     return render_template('doc.html')
@@ -123,3 +122,4 @@ class appinfo(Resource):
             'description': 'This is an API to interact with the bevy application'
         }
         return app
+        

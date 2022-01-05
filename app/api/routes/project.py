@@ -12,7 +12,6 @@ from flask import request
 from dateutil import parser
 from sqlalchemy.orm.attributes import flag_modified
 
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):

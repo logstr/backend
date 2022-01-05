@@ -13,6 +13,9 @@ class Config(object):
     SWAGGER_UI_DOC_EXPANSION = None
     RESTPLUS_MASK_SWAGGER = True
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+
 
 class Development(Config):
     DEBUG = True

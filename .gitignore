@@ -1,4 +1,6 @@
 /migrations
+/data
+/flask-zipkin
 Pipfile.lock
 .env
 *.pyc

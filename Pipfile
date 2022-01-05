@@ -17,6 +17,10 @@ gunicorn = "*"
 gevent = "*"
 eventlet = "==0.31.0"
 flask-socketio = "==5.0.0"
+pandas = "*"
+graphene = "*"
+flask-graphql = "*"
+graphene-sqlalchemy = "*"
 
 [dev-packages]
 
