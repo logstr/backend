@@ -45,20 +45,6 @@ class User(Resource):
     @appuser.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
         return a particular useranization with that id else it will return all useranizations belonging to the user.')
     @appuser.marshal_with(schema.userdata)
-    @appuser.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         token = request.headers['auth-token']
@@ -75,20 +61,6 @@ class User(Resource):
     # patch method
     @appuser.doc(description='This route is to update an existing useranization in the db.')
     @appuser.expect(schema.userdata)
-    @appuser.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -125,20 +97,6 @@ class User(Resource):
     # delete method
     @appuser.doc(description='This route is to delete an useranization from the db. Passing an id will \
         delete the particular useranization with that id else it will return an error.')
-    @appuser.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def delete(self):
         token = request.headers['auth-token']
@@ -166,20 +124,6 @@ class Userteam(Resource):
     @appuser.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
         return a particular team with that id else it will return all teams belonging to the user.')
     @appuser.marshal_with(schema.teamdata)
-    @appuser.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         id = request.args.get('id')

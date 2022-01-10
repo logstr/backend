@@ -1,12 +1,13 @@
 from flask_restplus import Namespace, Resource, fields
 from app.api import schema
-from app import db
+from app import db, oauth
 from app.models import Users
 from datetime import datetime
 from datetime import  timedelta
 import jwt, uuid, os
-from flask import current_app as app
+from flask import current_app as app, url_for, redirect
 from flask import Blueprint, render_template, abort, request
+
 
 auth = Namespace('Authentication', \
 description='This route authenticates a user and creates a token for user to keep logging into the system.\
@@ -14,33 +15,28 @@ Tokens will contain some more data about the user that can be used to later on i
 refresh `token` ( **30 days span** ) and a normal token ( **7 days** ) ', \
 path='/security')
 
-@auth.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirect', 400: 'Invalid Argument please check', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 
-        'firstname': 'Firstname of the user' , 
-        'password': 'password of the user' }
-    )
-
-
+@auth.doc(responses={ 200: 'OK successful', \
+    201: 'Creation successful', 301: 'Redirect', 400: 'Invalid Argument please check', \
+    401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
 @auth.route('/login')
 class Login(Resource):
     @auth.doc(description='User enter their `firstname` or `email` and a `password`. If an account exist \
         for that user, the user is then authenticated and if successfull the user `token` is generated')
     @auth.expect(schema.logindata)
-    @auth.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     def post(self):
+        google = oauth.remote_app(
+            'google',
+            consumer_key=app.config.get('GOOGLE_CLIENT_ID'),
+            consumer_secret=app.config.get('GOOGLE_CLIENT_SECRET'),
+            request_token_params={
+                'scope': 'email'
+            },
+            base_url='https://www.googleapis.com/oauth2/v1/',
+            request_token_url=None,
+            access_token_method='POST',
+            access_token_url='https://accounts.google.com/o/oauth2/token',
+            authorize_url='https://accounts.google.com/o/oauth2/auth',
+        )
         postdata = request.get_json()
         if postdata:
             firstname= postdata['firstname']
@@ -86,20 +82,6 @@ class Signup(Resource):
     @auth.doc(description='User enters their `username` and `password`.\
          These credentials are sent to server and a **token** is returned to the users after the account has been created.')
     @auth.expect(schema.signupdata)
-    @auth.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X POST 'http://127.0.0.1:5000/api/security/signup' -H  'accept: application/json' -H  'Content-Type: application/json' -d '{  \"username\": \"Boogie\",  \"number\": \"+237650221486\",  \"bus_type\": \"Personal\",  \"verification_code\": \"\"}' "
-                }
-            ]
-        })
     def post(self):
         postdata = request.get_json()
         if postdata:

@@ -45,20 +45,6 @@ class Organization(Resource):
     @org.doc(description='This route is to get all or one of the organizarions from the db. Passing an id will \
         return a particular organization with that id else it will return all organizations belonging to the user.')
     @org.marshal_with(schema.organizationdata)
-    @org.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         id = request.args.get('id')
@@ -75,20 +61,6 @@ class Organization(Resource):
     # post method
     @org.doc(description='This route is to add a new organization to the db.')
     @org.expect(schema.organizationdata)
-    @org.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def post(self):
         postdata = request.get_json()
@@ -110,20 +82,6 @@ class Organization(Resource):
     # patch method
     @org.doc(description='This route is to update an existing organization in the db.')
     @org.expect(schema.organizationdata)
-    @org.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -158,20 +116,6 @@ class Organization(Resource):
     # delete method
     @org.doc(description='This route is to delete an organization from the db. Passing an id will \
         delete the particular organization with that id else it will return an error.')
-    @org.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def delete(self):
         id = request.args.get('id')

@@ -45,20 +45,6 @@ class Session(Resource):
     @session.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
         return a particular useranization with that id else it will return all useranizations belonging to the user.')
     @session.marshal_with(schema.userdata)
-    @session.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         token = request.headers['auth-token']
@@ -75,20 +61,6 @@ class Session(Resource):
     # post method
     @session.doc(description='This route is to add a new team to the db.')
     @session.expect(schema.putprojectdata)
-    @session.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def post(self):
         postdata = request.get_json() 
@@ -117,20 +89,6 @@ class Session(Resource):
     # patch method
     @session.doc(description='This route is to update an existing useranization in the db.')
     @session.expect(schema.userdata)
-    @session.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -167,20 +125,6 @@ class Session(Resource):
     # delete method
     @session.doc(description='This route is to delete an useranization from the db. Passing an id will \
         delete the particular useranization with that id else it will return an error.')
-    @session.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def delete(self):
         token = request.headers['auth-token']
@@ -208,20 +152,6 @@ class Sessionproject(Resource):
     @session.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
         return a particular team with that id else it will return all teams belonging to the user.')
     @session.marshal_with(schema.teamdata)
-    @session.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         id = request.args.get('id')

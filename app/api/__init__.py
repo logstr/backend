@@ -25,7 +25,7 @@ authorizations = {
 }
 
 api = Blueprint('api', __name__, template_folder = '../templates')
-apisec = Api( app=api, doc='/docs', version='0.0.1', title='Logstr Api', \
+apisec = Api( app=api, doc='/redoc', version='0.0.1', title='Logstr Api', \
 description='''Get the current weather, daily forecast for 16 days, and a
     three-hour-interval forecast for 5 days for your city. Helpful stats,
     graphics, and this day in history charts are available for your reference.
@@ -106,7 +106,8 @@ def token_required(f):
 
 @apisec.documentation
 def docs():
-    return render_template('doc.html')
+    return render_template('redoc.html')
+
 
 @info.doc(responses={ 201: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error' })
 @info.route('/')

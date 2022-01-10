@@ -48,20 +48,6 @@ class Project(Resource):
         'org' : 'Organization uuid'
     })
     @project.marshal_with(schema.projectdata)
-    @project.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         token = request.headers['auth-token']
@@ -86,20 +72,6 @@ class Project(Resource):
     # post method
     @project.doc(description='This route is to add a new team to the db.')
     @project.expect(schema.putprojectdata)
-    @project.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def post(self):
         postdata = request.get_json() 
@@ -135,20 +107,6 @@ class Project(Resource):
     # patch method
     @project.doc(description='This route is to update an existing team in the db.')
     @project.expect(schema.patchprojectdata)
-    @project.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -190,20 +148,6 @@ class Project(Resource):
         'id': 'uuid of the project', 
         'org' : 'Organization uuid'
     })
-    @project.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def delete(self):
         id = request.args.get('id')

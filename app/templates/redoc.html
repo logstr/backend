@@ -21,7 +21,7 @@
         .sc-cKZHah {
           top: 72px !important;
         }
-        .sc-JooDp {
+        .duZDU {
           display: none !important;
         }
         .sc-eishCr {
@@ -36,13 +36,25 @@
   </head>
   <body>
     <div id="redoc-container"></div>
-    <script src="https://cdn.redoc.ly/reference-docs/latest/redocly-reference-docs.min.js"> </script>
+    <script src="/static/js/redoc.js"> </script>
     <script>
         RedoclyReferenceDocs.init('/api/swagger.json',
         {
-            // licenseKey: 'orgsk_uBhwn0dmcO92J1Jx/DSLzwZi5Jg=_rIizSsblVSZrV9icpfoST0z6pgqlwudyNxwjy7EF4q8=',
             scrollYOffset: 50,
             showConsole: true,
+            hideDownloadButton: true,
+            hideLogo: false,
+            generateCodeSamples: {
+              languages: [{ lang: 'curl' }, 
+                { lang: 'Node.js' }, 
+                { lang: 'JavaScript', label: 'JS' },
+                { lang: 'Python', label: 'Python' },
+                { lang: 'C#', label: 'C#' },
+                { lang: 'Java', label: 'Java' },
+                { lang: 'Go', label: 'Go' }
+              ],
+              skipOptionalParameters: true,
+            },
         }, document.getElementById('redoc-container'))
     </script>
   </body>

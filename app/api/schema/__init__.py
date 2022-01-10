@@ -1,7 +1,13 @@
 from flask_restplus.inputs import iso8601interval
 from app.api import apisec
 from flask_restplus import fields
+from app import ma
+from app.models import Users
 
+
+class UsersSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Users
 
 
 appinfo = apisec.model('Info', {

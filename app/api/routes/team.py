@@ -45,20 +45,6 @@ class Team(Resource):
     @team.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
         return a particular team with that id else it will return all teams belonging to the user.')
     @team.marshal_with(schema.teamdata)
-    @team.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self):
         id = request.args.get('id')
@@ -75,20 +61,6 @@ class Team(Resource):
     # post method
     @team.doc(description='This route is to add a new team to the db.')
     @team.expect(schema.putteamdata)
-    @team.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def post(self):
         postdata = request.get_json()
@@ -117,20 +89,6 @@ class Team(Resource):
     # patch method
     @team.doc(description='This route is to update an existing team in the db.')
     @team.expect(schema.teamdata)
-    @team.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -174,20 +132,6 @@ class Team(Resource):
     # delete method
     @team.doc(description='This route is to delete an team from the db. Passing an id will \
         delete the particular team with that id else it will return an error.')
-    @team.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def delete(self):
         id = request.args.get('id')

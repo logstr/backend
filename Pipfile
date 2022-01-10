@@ -18,9 +18,12 @@ gevent = "*"
 eventlet = "==0.31.0"
 flask-socketio = "==5.0.0"
 pandas = "*"
-graphene = "*"
+graphene = "==2.1.8"
 flask-graphql = "*"
 graphene-sqlalchemy = "*"
+marshmallow-sqlalchemy = "*"
+graphql-core = "==2.2.1"
+flask-oauthlib = "*"
 
 [dev-packages]
 

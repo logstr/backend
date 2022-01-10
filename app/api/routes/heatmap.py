@@ -46,20 +46,6 @@ class View(Resource):
     @heat.doc(description='User enter their `number` and a `code` is sent via **sms** to that number. If an accoutn exist \
         for that number, the code is then heatenticated and if successfull the user proceeds to dashboard.')
     #@heat.marshal_with(schema.heatmapdata)
-    @heat.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     @token_required
     def get(self, id):
         return {
@@ -78,20 +64,6 @@ class AddData(Resource):
         this data is stored under a particular master site and can be accessed by site owner when they login. \
             this data will then be stored in the heatmap section of the particular site.')
     #@heat.expect(schema.heatmapclient)
-    @heat.vendor(
-        {
-            'x-codeSamples':
-            [
-                { 
-                    "lang": "JavaScript",
-                    "source": "console.log('Hello World');" 
-                },
-                { 
-                    "lang": "Curl",
-                    "source": "curl -X PUT -H "
-                }
-            ]
-        })
     def post(self):
         heatmapdata = request.get_json()
         username = heatmapdata['username']
