@@ -1,5 +1,5 @@
 from functools import wraps
-from flask_restplus import Namespace, Resource
+from flask_restx import Namespace, Resource
 from app.api import schema
 from app import db
 from app.models import Users, Projects, Sessions, Organizations, Teams, Heatmaps

@@ -6,7 +6,9 @@ basedir= os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'logstr.sqlite')
+    SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@localhost/{}'\
+        .format(os.getenv('DB_USER'),os.getenv('DB_PASSWORD'), os.getenv('DB_NAME'))
+    # 'sqlite:///' + os.path.join(basedir, 'logstr.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     RESTPLUS_VALIDATE = True
     SWAGGER_UI_OPERATION_ID = True
@@ -16,6 +18,12 @@ class Config(object):
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+    RQ_REDIS_URL = 'redis://localhost:6379'
+    RQ_QUEUES = ['default', 'high', 'medium', 'low']
+    RQ_SCHEDULER_QUEUE = 'scheduled'
+    RQ_DASHBOARD_REDIS_URL='redis://localhost:6379'
+    RQ_DASHBOARD_USERNAME='admin'
+    RQ_DASHBOARD_PASSWORD='admin'
 
 
 class Development(Config):

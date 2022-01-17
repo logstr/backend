@@ -4,8 +4,8 @@ Api related resources
 
 from datetime import datetime
 import app
-from flask import Blueprint
-from flask_restplus import Api, Resource
+from flask import Blueprint, current_app
+from flask_restx import Api, Resource
 from flask import Blueprint, render_template, request
 from flask_cors import CORS
 from functools import wraps
@@ -16,7 +16,18 @@ import jwt
 
 
 # API security
-authorizations = {
+security={'OAuth2': ['read', 'write']},
+authorizations={
+    'Google': {
+        'type': 'oauth2',
+        'flow': 'Authorization Code',
+        'authorizationUrl': 'http://localhost:5000/login/authorized',
+        'clientId': app.config.get('GOOGLE_CLIENT_ID'),
+        'scopes': {
+            'email': 'Get user information',
+            'profile': 'Get full user identity',
+        }
+    },
     'KEY': {
         'type': 'apiKey',
         'in': 'header',
@@ -25,7 +36,7 @@ authorizations = {
 }
 
 api = Blueprint('api', __name__, template_folder = '../templates')
-apisec = Api( app=api, doc='/redoc', version='0.0.1', title='Logstr Api', \
+apisec = Api( app=api, doc='/redoc', version='0.0.1',title='Logstr Api', \
 description='''Get the current weather, daily forecast for 16 days, and a
     three-hour-interval forecast for 5 days for your city. Helpful stats,
     graphics, and this day in history charts are available for your reference.
@@ -70,8 +81,8 @@ description='**Note:** This operation is only available if you have [Invoice\
 path='/')
 
 from . import schema
-from .routes import auth, heat, org, appuser, team, project
-
+from .routes import auth, heat, org, appuser, \
+    team, project, view, sessionuser, record, session
 
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
@@ -83,8 +94,12 @@ apisec.add_namespace(auth)
 apisec.add_namespace(heat)
 apisec.add_namespace(org)
 apisec.add_namespace(appuser)
-# apisec.add_namespace(team)
+apisec.add_namespace(team)
 apisec.add_namespace(project)
+apisec.add_namespace(view)
+apisec.add_namespace(sessionuser)
+apisec.add_namespace(record)
+apisec.add_namespace(session)
 
 # The token decorator to protect my routes
 def token_required(f):

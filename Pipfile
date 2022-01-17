@@ -9,7 +9,6 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 python-dotenv = "*"
 flask-cors = "*"
-flask-restplus = "*"
 pyjwt = "*"
 werkzeug = "==0.16.1"
 python-dateutil = "*"
@@ -24,6 +23,10 @@ graphene-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 graphql-core = "==2.2.1"
 flask-oauthlib = "*"
+flask-restx = "*"
+flask-rq2 = "*"
+rq-dashboard = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

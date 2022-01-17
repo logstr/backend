@@ -1,5 +1,5 @@
 from functools import wraps
-from flask_restplus import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields
 from app.api import schema
 from app import db
 from app.models import Users, Projects, Sessions, Organizations, Teams, Heatmaps
@@ -29,7 +29,7 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-heat = Namespace('Heatmap', \
+heat = Namespace('Heatmaps', \
 description='This contains data for the **user** and content belonging to the \
 application to be shared. The android and iOS application will make calls from \
 these endpoints. Tokens will be the method of security with two tokens, a  \

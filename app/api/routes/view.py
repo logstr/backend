@@ -29,22 +29,22 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-appuser = Namespace('Users', \
-description='This namespace contains useranization manipulation routes. It requires authentication to access \
+view = Namespace('Views', \
+description='This namespace contains views manipulation routes. It requires authentication to access \
     with the `token` sent from the api response which can be found in the `authentication` namespace.', \
-path='/user')
+path='/view')
 
 
 
-@appuser.doc(security='KEY')
-@appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
+@view.doc(security='KEY')
+@view.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 'id': 'ID of the site to view heatmap data'})
-@appuser.route('/')
-class User(Resource):
+@view.route('/')
+class View(Resource):
     # get method
-    @appuser.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
+    @view.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
         return a particular useranization with that id else it will return all useranizations belonging to the user.')
-    @appuser.marshal_with(schema.userdata)
+    @view.marshal_with(schema.userdata)
     @token_required
     def get(self):
         token = request.headers['auth-token']
@@ -59,8 +59,8 @@ class User(Resource):
             }, 200
 
     # patch method
-    @appuser.doc(description='This route is to update an existing useranization in the db.')
-    @appuser.expect(schema.userdata)
+    @view.doc(description='This route is to update an existing useranization in the db.')
+    @view.expect(schema.userdata)
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -95,7 +95,7 @@ class User(Resource):
         }, 200
 
     # delete method
-    @appuser.doc(description='This route is to delete an useranization from the db. Passing an id will \
+    @view.doc(description='This route is to delete an useranization from the db. Passing an id will \
         delete the particular useranization with that id else it will return an error.')
     @token_required
     def delete(self):
@@ -115,15 +115,15 @@ class User(Resource):
             }, 200
 
 
-@appuser.doc(security='KEY')
-@appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
+@view.doc(security='KEY')
+@view.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 'id': 'ID of the site to view heatmap data'})
-@appuser.route('/user/team')
-class Userteam(Resource):
+@view.route('/user/team')
+class SessionView(Resource):
 
-    @appuser.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
+    @view.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
         return a particular team with that id else it will return all teams belonging to the user.')
-    @appuser.marshal_with(schema.teamdata)
+    @view.marshal_with(schema.teamdata)
     @token_required
     def get(self):
         id = request.args.get('id')

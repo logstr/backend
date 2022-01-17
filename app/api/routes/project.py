@@ -1,6 +1,6 @@
 from functools import wraps
 import uuid
-from flask_restplus import Namespace, Resource
+from flask_restx import Namespace, Resource
 from app.api import schema
 from app import db
 from app.models import Users, Projects, Sessions, Organizations, Teams, Heatmaps
@@ -29,7 +29,7 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-project = Namespace('Project', \
+project = Namespace('Projects', \
 description='This namespace contains team manipulation routes. It requires authentication to access \
     with the `token` sent from the api response which can be found in the `authentication` namespace.', \
 path='/project')

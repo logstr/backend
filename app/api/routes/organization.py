@@ -1,5 +1,5 @@
 from functools import wraps
-from flask_restplus import Namespace, Resource
+from flask_restx import Namespace, Resource
 from app.api import schema
 from app import db
 from app.models import Users, Projects, Sessions, Organizations, Teams, Heatmaps
@@ -29,7 +29,7 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-org = Namespace('Organization', \
+org = Namespace('Organizations', \
 description='This namespace contains organization manipulation routes. It requires authentication to access \
     with the `token` sent from the api response which can be found in the `authentication` namespace.', \
 path='/org')
@@ -70,7 +70,6 @@ class Organization(Resource):
         if postdata:
             name= postdata['name']
             updated_at = postdata['updated_at'] if 'updated_at' in postdata else None
-
             org = Organizations(name, updated_at, user.id)
             db.session.add(org)
             db.session.commit()

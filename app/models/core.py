@@ -12,11 +12,11 @@ class logevents(enum.Enum):
 
 class Users (db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     uuid = db.Column(db.Unicode, unique=True)
     emailaddress = db.Column(db.String(60))
     phone = db.Column(db.String(30))
-    password = db.Column(db.String(30))
+    password = db.Column(db.String(256))
     first_name = db.Column(db.String(30))
     last_name = db.Column(db.String(30))
     ptofile_pic = db.Column(db.String(80))
@@ -49,12 +49,14 @@ class Users (db.Model):
 
 class Organizations (db.Model):
     __tablename__ = "organizations"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     uuid = db.Column(db.String(60), unique=True)
     name = db.Column(db.String(30))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    projects = db.relationship('Projects', backref='orgprojects', lazy='dynamic')
 
     def __init__(self, name, update_at, user_id):
         self.uuid = uuid.uuid4().hex
@@ -69,9 +71,9 @@ class Organizations (db.Model):
 
 class Teams (db.Model):
     __tablename__ = "teams"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     name = db.Column(db.String(30))
-    uuid = db.Column(db.String(60), unique=True)
+    uuid = db.Column(db.String(60), primary_key = True, unique=True)
     size = db.Column(db.Integer)
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
@@ -95,25 +97,25 @@ class Teams (db.Model):
 
 class Sessions (db.Model):
     __tablename__ = "sessions"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
     uuid = db.Column(db.String(60), primary_key = True, unique=True)
     ip_address = db.Column(db.String(60))
     device = db.Column(db.String(60))
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     navigator_info = db.Column(db.JSON)
-    projects_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
-    projects = db.relationship('Projects', foreign_keys=projects_id)
     created_at = db.Column(db.DateTime)
+    projects_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    sessions_user_id = db.Column(db.Integer, db.ForeignKey('sessionuser.id'))
 
-    def __init__(self, ip, device, startTime, endTime, project, project_id, navigator):
+    def __init__(self, ip, device, startTime, endTime, project_id, navigator, sessionuser):
         self.uuid = uuid.uuid4().hex
         self.ip_address = ip
         self.device = device
         self.start_time = startTime
+        self.sessions_user_id = sessionuser
         self.end_time = endTime
         self.navigator_info = navigator
-        self.projects = project
         self.projects_id = project_id
         self.created_at = datetime.utcnow()
         
@@ -130,7 +132,8 @@ class Projects (db.Model):
     admin = db.Column('admin', db.Integer, db.ForeignKey('users.id'))
     organizations_id = db.Column('organizations_id', db.Integer, db.ForeignKey('organizations.id'))
 
-    organizations = db.relationship('Organizations', foreign_keys=organizations_id)
+    sessions = db.relationship('Sessions', backref='project_sessions', lazy='dynamic')
+    usersessions = db.relationship('Sessionuser', backref='sessions', lazy='dynamic')
 
     def __init__(self, name, appplatform, admin, organization_id):
         self.uuid = uuid.uuid4().hex
@@ -146,19 +149,18 @@ class Projects (db.Model):
 
 class Heatmaps (db.Model):
     __tablename__ = "heatmaps"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
     xdata = db.Column(db.Integer)
     ydata = db.Column(db.Integer)
     value = db.Column(db.Integer)
     event_type = db.Column(db.Enum(logevents))
     event = db.Column(db.JSON)
-    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
-    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
     timestamp = db.Column(db.DateTime)
     event_info = db.Column(db.JSON)
+    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
 
     def __init__(self, xdata, ydata, value, event_type_key, event, \
-        session_id, session_uuid, timestamp, event_info):
+        session_id, timestamp, event_info):
         self.uuid = uuid.uuid4().hex
         self.xdata = xdata
         self.ydata = ydata
@@ -166,7 +168,6 @@ class Heatmaps (db.Model):
         self.event_type = event_type_key
         self.event = event
         self.sessions_id = session_id
-        self.sessions_uuid = session_uuid
         self.timestamp = timestamp
         self.event_info = event_info
         
@@ -174,9 +175,29 @@ class Heatmaps (db.Model):
     def __repr__(self):
         return '<Heatmap %r>' % self.uuid
 
+class Recordings (db.Model):
+    __tablename__ = "recordings"
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    dtype = db.Column(db.Integer)
+    data = db.Column(db.JSON)
+    timestamp = db.Column(db.DateTime)
+    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
+    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
+
+    def __init__(self, dtype, data, timestamp, session_id, session_uuid):
+        self.uuid = uuid.uuid4().hex
+        self.dtype = dtype
+        self.data = data
+        self.timestamp = timestamp
+        self.sessions_id = session_id
+        self.sessions_uuid = session_uuid
+
+    def __repr__(self):
+        return '<Heatmap %r>' % self.uuid
+
 class Views (db.Model):
     __tablename__ = "views"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     uuid = db.Column(db.String(60), primary_key = True, unique=True)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
@@ -198,20 +219,22 @@ class Views (db.Model):
     def __repr__(self):
         return '<View %r>' % self.uuid
 
-class SessionUser (db.Model):
+class Sessionuser (db.Model):
     __tablename__ = "sessionuser"
-    id = db.Column(db.Integer, primary_key = True)
-    uuid = db.Column(db.String(60), primary_key = True, unique=True)
+    id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
+    uuid = db.Column(db.String(60), unique=True)
     name = db.Column(db.String(60))
     email = db.Column(db.String(60))
-    sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
-    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
     created_at = db.Column(db.DateTime)
+    projects_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
 
-    def __init__(self, name, email):
+    usersessions = db.relationship('Sessions', backref='sessions', lazy='dynamic')
+
+    def __init__(self, name, email, project):
         self.uuid = uuid.uuid4().hex
         self.name = name
         self.email = email
+        self.projects_id = project
         self.created_at = datetime.utcnow()
         
 

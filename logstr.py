@@ -1,7 +1,9 @@
 '''
 App entry point
 '''
+from datetime import time, timedelta
 from sys import version
+from time import sleep
 from flask import redirect, url_for, request, session, jsonify
 from flask.templating import render_template
 from app import create_app, graphql, sio, oauth
@@ -43,10 +45,12 @@ def authorized():
             request.args['error_reason'],
             request.args['error_description']
         )
-    session['google_token'] = (resp['access_token'], '')
+    google_token = (resp['access_token'], '')
     me = google.get('userinfo')
-    return jsonify({"data": me.data})
-
+    return jsonify({
+        "data": me.data,
+        "google_token": google_token
+        })
 
 @google.tokengetter
 def get_google_oauth_token():
@@ -62,7 +66,7 @@ app.add_url_rule('/api/graphql', view_func=GraphQLView.as_view(
 ))
 
 if __name__ == "__main__":
-    print(logstr.format('📦  LOGSTR API','[*] Ran system checks','[+] Starting api ...'))
+    print(logstr.format('📦  LOGSTR API','🚒 Ran system checks','[+] Starting api ...'))
     sio.run(
         app = app,
         host=app.config.get('HOST'),

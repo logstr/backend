@@ -1,6 +1,6 @@
-from flask_restplus.inputs import iso8601interval
+from flask_restx.inputs import iso8601interval
 from app.api import apisec
-from flask_restplus import fields
+from flask_restx import fields
 from app import ma
 from app.models import Users
 
@@ -42,7 +42,16 @@ userdata = apisec.model('User', {
             user number with verification will authenticate the user.''')
 })
 
-sessiondata = apisec.model('Sessiondata', {
+usersessiondata = apisec.model('Usersessiondata', {
+    'username': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
+    'emailaddress': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),
+    'sessionid': fields.String(max_length=64, description='`id` of the session', example='2467'),
+    'sessionuuid': fields.String(max_length=64, description='`uuid` of the session', example='769732655d06491d9792cf1d7f3aea2c')
+})
+
+putheatdata = apisec.model('Sessiondata', {
+    'username': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
+    'emailaddress': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),
     'ip': fields.String(required=True, max_length=64, description='IP address of the session', example='154.0.0.24'),
     'xdata': fields.Integer,
     'ydata': fields.Integer,
@@ -52,6 +61,33 @@ sessiondata = apisec.model('Sessiondata', {
     'session_uuid': fields.String(required=True, max_length=60, description='Session uuid of the project'),
     'timestamp': fields.DateTime(),
     'event_info': fields.String(required=True, max_length=300, description='Organization uuid provided by api reponse')
+})
+
+sessiondata = apisec.model('Sessiondata', {
+    'username': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
+    'emailaddress': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),
+    'ip': fields.String(required=True, max_length=64, description='IP address of the session', example='154.0.0.24'),
+    'device': fields.String(required=True, max_length=64, description='Device name', example='Mac Os'),
+    'project_id': fields.String(required=True, max_length=60, description='uuid of the project', example='769732655d06491d9792cf1d7f3aea2c'),
+    'navigator': fields.String(required=True, max_length=64, description='Navigator information of the session', example='{\'navigator\': \'xxxx\'}'),
+    'startTime': fields.DateTime(),
+    'endTime': fields.DateTime()
+})
+getsessiondata = apisec.model('Getsessiondata', {
+    'ip_address': fields.String(required=True, max_length=64, description='IP address of the session', example='154.0.0.24'),
+    'device': fields.String(required=True, max_length=64, description='Device name', example='Mac Os'),
+    'projects_id': fields.Integer,
+    'sessions_user_id': fields.Integer,
+    'navigator_info': fields.String(required=True, max_length=64, description='Navigator information of the session', example='{\'navigator\': \'xxxx\'}'),
+    'start_time': fields.DateTime(),
+    'end_time': fields.DateTime(),
+    'created_at': fields.DateTime()
+})
+
+sessionuser = apisec.model('Sessionuser', {
+    'name': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
+    'email': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),
+    'projects_id': fields.String(required=True, max_length=60, description='uuid of the project', example='769732655d06491d9792cf1d7f3aea2c'),
 })
 
 putprojectdata = apisec.model('Putprojectdata', {
