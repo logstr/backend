@@ -1,8 +1,11 @@
 from functools import wraps
+import uuid, json
 from flask_restx import Namespace, Resource
+from flask_restx.marshalling import marshal_with, marshal
 from app.api import schema
 from app import db
-from app.models import Users, Projects, Sessions, Organizations, Teams, Heatmaps
+from app.models import Users, Projects, Sessions, \
+    Organizations, Teams, Heatmaps, Recordings
 from datetime import datetime
 from datetime import  timedelta
 import jwt
@@ -37,56 +40,59 @@ path='/record')
 
 
 @record.doc(security='KEY')
-@record.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 'id': 'ID of the site to record heatmap data'})
+@record.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
 @record.route('/')
 class Record(Resource):
     # get method
-    @record.doc(description='This route is to get all or one of the useranizarions from the db. Passing an id will \
-        return a particular useranization with that id else it will return all useranizations belonging to the user.')
-    @record.marshal_with(schema.userdata)
+    @record.doc(description='This route gets all the recordings of a particular session. It isn\'t \
+        parginated so this may return a bulky result or may be s little slow to return if data is more \
+            than `500` results. If you want a parginated result, see the other get route.',\
+            params={'session_id':'Session id'})
+    @record.marshal_with(schema.getrecordingdata)
     @token_required
     def get(self):
-        token = request.headers['auth-token']
-        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
-        if user:
-            return user, 200
+        session_id = request.args.get('session_id')
+        session = Sessions.query.filter_by(uuid=session_id).first()
+        if session:
+            records = Recordings.query.filter_by(sessions_id=session.id).all()
+            return records, 200
         else:
             return {
                 'result': 'No data',
                 'status': False
             }, 200
 
-    # patch method
-    @record.doc(description='This route is to update an existing useranization in the db.')
-    @record.expect(schema.userdata)
+    # Post method
+    @record.doc(description='This route is to put session recorded data into the database')
+    @record.expect(schema.postrecordingdata)
     @token_required
-    def put(self):
+    def post(self):
         postdata = request.get_json()
         token = request.headers['auth-token']
         tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
         user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         if postdata:
-            first_name = postdata['first_name'] if 'first_name' in postdata else None
-            last_name = postdata['last_name'] if 'last_name' in postdata else None
-            email = postdata['emailaddress'] if 'emailaddress' in postdata else None
-            number = postdata['phone'] if 'phone' in postdata else None
+            session_uuid = postdata['session_uuid'] if 'session_uuid' in postdata else None
 
-            if user:
-                user.first_name = first_name
-                user.last_name = last_name
-                user.emailaddress = email
-                user.phone = number
-                db.session.merge(user)
+            session = Sessions.query.filter_by(uuid=session_uuid).first()
+            if session:
+                db.session.bulk_save_objects(
+                    [
+                        Recordings(type=i['type'], \
+                            data=i['data'], \
+                                timestamp=i['timestamp'], \
+                                    session_id=session.id)
+                        for i in json.loads(postdata['recdata'])['recordings']
+                    ]
+                )
                 db.session.commit()
                 return {
-                    'result': 'user updated',
+                    'result': 'recording saved',
                     'status': True
                 }, 200
             else:
                 return {
-                    'result': 'No user found',
+                    'result': 'No session found',
                     'status': False
                 }, 200
         return {
@@ -94,45 +100,33 @@ class Record(Resource):
             'status': False
         }, 200
 
-    # delete method
-    @record.doc(description='This route is to delete an useranization from the db. Passing an id will \
-        delete the particular useranization with that id else it will return an error.')
-    @token_required
-    def delete(self):
-        token = request.headers['auth-token']
-        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
-        if user:
-            db.session.commit()
-            return {
-                'result': 'user removed',
-                'status': True
-            }, 200
-        else:
-            return {
-                'result': 'No user specified',
-                'status': False
-            }, 200
-
-
 @record.doc(security='KEY')
 @record.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
     params= { 'id': 'ID of the site to record heatmap data'})
-@record.route('/user/team')
+@record.route('/user')
 class Sessionrecord(Resource):
 
-    @record.doc(description='This route is to get all or one of the teams from the db. Passing an id will \
-        return a particular team with that id else it will return all teams belonging to the user.')
-    @record.marshal_with(schema.teamdata)
+    @record.doc(description='This route returns a parginated result. It may return faster and it is \
+        `recommended` use this route to parginate.',\
+            params={'session_id':'Session id', 'start': 'Page of items', 'count':'Number of items to process'})
     @token_required
     def get(self):
-        id = request.args.get('id')
-        token = request.headers['auth-token']
-        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
-        if id:
-            team = user.teams.query.filter_by(uuid=id).first()
-            return team, 200
+        session_id = request.args.get('session_id')
+        start  = request.args.get('start', None)
+        count = request.args.get('count', None)
+        next = "/api/record/user?id="+str(session_id)+"&start="+str(int(start)+1)+"&count="+count
+        previous = "/api/record/user?id="+str(session_id)+"&start="+str(int(start)-1)+"&count="+count
+
+        session = Sessions.query.filter_by(uuid=session_id).first()
+        if session:
+            records = Recordings.query.filter_by(sessions_id=session.id).paginate(int(start), int(count), False).items
+            return {
+                'data': marshal(records, schema.getrecordingdata),
+                'next': next,
+                'previous': previous
+            }, 200
         else:
-            team = user.teams.all()
-            return team, 200
+            return {
+                'result': 'No data',
+                'status': False
+            }, 200

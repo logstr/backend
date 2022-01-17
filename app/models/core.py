@@ -178,22 +178,20 @@ class Heatmaps (db.Model):
 class Recordings (db.Model):
     __tablename__ = "recordings"
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
-    dtype = db.Column(db.Integer)
+    type = db.Column(db.Integer)
     data = db.Column(db.JSON)
-    timestamp = db.Column(db.DateTime)
+    timestamp = db.Column(db.BigInteger)
     sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
-    sessions_uuid = db.Column(db.String(60), db.ForeignKey('sessions.uuid'))
 
-    def __init__(self, dtype, data, timestamp, session_id, session_uuid):
+    def __init__(self, type, data, timestamp, session_id):
         self.uuid = uuid.uuid4().hex
-        self.dtype = dtype
+        self.type = type
         self.data = data
         self.timestamp = timestamp
         self.sessions_id = session_id
-        self.sessions_uuid = session_uuid
 
     def __repr__(self):
-        return '<Heatmap %r>' % self.uuid
+        return '<Heatmap %r>' % self.id
 
 class Views (db.Model):
     __tablename__ = "views"

@@ -84,6 +84,17 @@ getsessiondata = apisec.model('Getsessiondata', {
     'created_at': fields.DateTime()
 })
 
+getrecordingdata = apisec.model('getrecordingdata', {
+    'data': fields.Raw(),
+    'type': fields.Integer(description='Type of mutation', example=3),
+    'timestamp': fields.Integer
+})
+
+postrecordingdata = apisec.model('postrecordingdata', {
+    'session_uuid': fields.String(required=True, description='Id of the session', example='769732655d06491d9792cf1d7f3aea2c'),
+    'recdata': fields.String()
+})
+
 sessionuser = apisec.model('Sessionuser', {
     'name': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
     'email': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),
