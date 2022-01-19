@@ -160,8 +160,8 @@ class Projects (db.Model):
 class Heatmaps (db.Model):
     __tablename__ = "heatmaps"
     id = db.Column(db.Integer, primary_key = True, unique=True, autoincrement=True)
-    xdata = db.Column(db.Integer)
-    ydata = db.Column(db.Integer)
+    x = db.Column(db.Integer)
+    y = db.Column(db.Integer)
     value = db.Column(db.Integer)
     event_type = db.Column(db.Enum(logevents))
     event = db.Column(db.JSON)
@@ -171,8 +171,8 @@ class Heatmaps (db.Model):
 
     def __init__(self, xdata, ydata, value, event_type_key, event, \
         session_id, timeOffset, event_info):
-        self.xdata = xdata
-        self.ydata = ydata
+        self.x = xdata
+        self.y = ydata
         self.value = value
         self.event_type = event_type_key
         self.event = event

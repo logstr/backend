@@ -10,6 +10,7 @@ from app import create_app, graphql, sio, oauth
 from flask_graphql import GraphQLView
 from app.graphql.schema import schema
 from app.graphql.template import TEMPLATE, GRAPHIQL_VERSION
+from app.jobs.job import send_email
 
 app = create_app('dev')
 
@@ -32,6 +33,16 @@ google = oauth.remote_app(
 @app.route('/')
 def docs():
     return redirect(url_for('api.doc'))
+
+@app.route('/email')
+def email():
+    send_email('Weekly Web Reports for Logstr app',
+                sender=app.config['ADMINS'][0], recipients=['das.sanctity.ds@gmail.com'],
+                text_body=render_template('report.txt'),
+                html_body=render_template('report.html'),
+                attachments=None,
+                sync=True)
+    return 'done'
 
 @app.route('/login')
 def login():

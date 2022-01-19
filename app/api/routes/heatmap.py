@@ -47,14 +47,13 @@ class Heatmap(Resource):
     @heat.doc(description='This route gets all the heatings of a particular session. It isn\'t \
         parginated so this may return a bulky result or may be s little slow to return if data is more \
             than `500` results. If you want a parginated result, see the other get route.',\
-            params={'session_id':'Session id'})
-    @heat.marshal_with(schema.getrecordingdata)
+            params={'type': 'click'})
+    @heat.marshal_with(schema.getheatdata)
     @token_required
     def get(self):
-        session_id = request.args.get('session_id')
-        session = Sessions.query.filter_by(uuid=session_id).first()
-        if session:
-            heats = Heatmaps.query.filter_by(sessions_id=session.id).all()
+        type =  request.args.get('type')
+        if type:
+            heats = Heatmaps.query.filter_by(event_type=type).all()
             return heats, 200
         else:
             return {
@@ -89,30 +88,23 @@ class Heatmap(Resource):
         }, 200
 
 @heat.doc(security='KEY')
-@heat.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 'id': 'ID of the site to heat heatmap data'})
+@heat.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
 @heat.route('/user')
 class SessionHeatmap(Resource):
 
-    @heat.doc(description='This route returns a parginated result. It may return faster and it is \
-        `recommended` use this route to parginate.',\
-            params={'session_id':'Session id', 'start': 'Page of items', 'count':'Number of items to process'})
+    @heat.doc(description='This route gets all the heatings of a particular session. It isn\'t \
+        parginated so this may return a bulky result or may be s little slow to return if data is more \
+            than `500` results. If you want a parginated result, see the other get route.',\
+            params={'session_id':'Session id', 'type': 'click'})
+    @heat.marshal_with(schema.getheatdata)
     @token_required
     def get(self):
         session_id = request.args.get('session_id')
-        start  = request.args.get('start', None)
-        count = request.args.get('count', None)
-        next = "/api/heat/user?id="+str(session_id)+"&start="+str(int(start)+1)+"&count="+count
-        previous = "/api/heat/user?id="+str(session_id)+"&start="+str(int(start)-1)+"&count="+count
-
+        type =  request.args.get('type')
         session = Sessions.query.filter_by(uuid=session_id).first()
         if session:
-            heats = Heatmaps.query.filter_by(sessions_id=session.id).paginate(int(start), int(count), False).items
-            return {
-                'data': marshal(heats, schema.getrecordingdata),
-                'next': next,
-                'previous': previous
-            }, 200
+            heats = Heatmaps.query.filter((Heatmaps.sessions_id==session.id) & (Heatmaps.event_type==type)).all()
+            return heats, 200
         else:
             return {
                 'result': 'No data',

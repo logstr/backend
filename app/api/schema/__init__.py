@@ -49,6 +49,12 @@ usersessiondata = apisec.model('Usersessiondata', {
     'sessionuuid': fields.String(max_length=64, description='`uuid` of the session', example='769732655d06491d9792cf1d7f3aea2c')
 })
 
+getheatdata = apisec.model('getheatdata', {
+    'x': fields.Integer,
+    'y': fields.Integer,
+    'value': fields.Integer
+})
+
 putheatdata = apisec.model('Sessiondata', {
     'username': fields.String(max_length=64, description='username app user or reoccuring visitor', example='adam'),
     'emailaddress': fields.String(max_length=64, description='email associated with reoccuring user e.g adam@acme.org', example='adam@acme.org'),

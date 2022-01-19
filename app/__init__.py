@@ -11,12 +11,15 @@ from flask_socketio import SocketIO
 from flask_oauthlib.client import OAuth
 from redis import Redis
 import rq, rq_dashboard
+from flask_mail import Mail
+
 
 
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 oauth = OAuth()
+mail = Mail()
 sio = SocketIO(logger=False, engineio_logger=False)
 
 def create_app(configname):
@@ -26,6 +29,7 @@ def create_app(configname):
     db.init_app(app)
     sio.init_app(app, cors_allowed_origins="*")
     ma.init_app(app)
+    mail.init_app(app)
     oauth.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
     app.redis = Redis.from_url(app.config['RQ_REDIS_URL'])

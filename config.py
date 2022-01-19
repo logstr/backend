@@ -24,6 +24,12 @@ class Config(object):
     RQ_DASHBOARD_REDIS_URL='redis://localhost:6379'
     RQ_DASHBOARD_USERNAME='admin'
     RQ_DASHBOARD_PASSWORD='admin'
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    ADMINS = ['nitroshark40@gmail.com']
 
 
 class Development(Config):

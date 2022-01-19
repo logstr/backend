@@ -1,12 +1,18 @@
 from app.models import Recordings, Heatmaps
 from flask import current_app as app
-from app import db, create_app
+from flask_mail import Message
+from app import db, create_app, mail
 import json
+from threading import Thread
 
 
 
 app = create_app('dev')
 app.app_context().push()
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 def addrecord(postdata, session):
     db.session.bulk_save_objects(
@@ -50,3 +56,18 @@ def addheat(postdata, session):
                     db.session.add(data)
     db.session.commit()
     return session
+
+
+def send_email(subject, sender, recipients, text_body, html_body,
+               attachments=None, sync=False):
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    if attachments:
+        for attachment in attachments:
+            msg.attach(*attachment)
+    if sync:
+        mail.send(msg)
+    else:
+        Thread(target=send_async_email,
+            args=(app._get_current_object(), msg)).start()
