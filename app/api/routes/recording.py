@@ -1,5 +1,6 @@
 from functools import wraps
 import uuid, json
+from flask.ctx import AppContext
 from flask_restx import Namespace, Resource
 from flask_restx.marshalling import marshal_with, marshal
 from app.api import schema
@@ -11,8 +12,7 @@ from datetime import  timedelta
 import jwt
 from flask import current_app as app
 from flask import request
-from dateutil import parser
-from sqlalchemy.orm.attributes import flag_modified
+
 
 
 def token_required(f):
@@ -68,24 +68,12 @@ class Record(Resource):
     @token_required
     def post(self):
         postdata = request.get_json()
-        token = request.headers['auth-token']
-        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         if postdata:
             session_uuid = postdata['session_uuid'] if 'session_uuid' in postdata else None
 
             session = Sessions.query.filter_by(uuid=session_uuid).first()
             if session:
-                db.session.bulk_save_objects(
-                    [
-                        Recordings(type=i['type'], \
-                            data=i['data'], \
-                                timestamp=i['timestamp'], \
-                                    session_id=session.id)
-                        for i in json.loads(postdata['recdata'])['recordings']
-                    ]
-                )
-                db.session.commit()
+                session.launch_insert('addrecord', postdata, session.id)
                 return {
                     'result': 'recording saved',
                     'status': True

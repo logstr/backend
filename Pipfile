@@ -24,7 +24,6 @@ marshmallow-sqlalchemy = "*"
 graphql-core = "==2.2.1"
 flask-oauthlib = "*"
 flask-restx = "*"
-flask-rq2 = "*"
 rq-dashboard = "*"
 psycopg2-binary = "*"
 

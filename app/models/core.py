@@ -2,8 +2,12 @@ from app import db
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
-import enum
+import uuid, enum
+from flask import current_app as app
+import redis
+import rq
+
+
 
 class logevents(enum.Enum):
     click = 'click'
@@ -123,6 +127,12 @@ class Sessions (db.Model):
     def __repr__(self):
         return '<Session %r>' % self.uuid
 
+    def launch_insert(self, name, data, session, *args, **kwargs):
+        passiveinsert = app.high_queue.enqueue('app.jobs.job.' + name, data, session, *args, **kwargs)
+        task = Task(id=passiveinsert.get_id(), name='addrecord', description='Slow insert task', session_id=self)
+        db.session.add(task)
+        return task
+
 class Projects (db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key = True)
@@ -155,25 +165,24 @@ class Heatmaps (db.Model):
     value = db.Column(db.Integer)
     event_type = db.Column(db.Enum(logevents))
     event = db.Column(db.JSON)
-    timestamp = db.Column(db.DateTime)
+    timeOffset = db.Column(db.BigInteger)
     event_info = db.Column(db.JSON)
     sessions_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
 
     def __init__(self, xdata, ydata, value, event_type_key, event, \
-        session_id, timestamp, event_info):
-        self.uuid = uuid.uuid4().hex
+        session_id, timeOffset, event_info):
         self.xdata = xdata
         self.ydata = ydata
         self.value = value
         self.event_type = event_type_key
         self.event = event
         self.sessions_id = session_id
-        self.timestamp = timestamp
+        self.timeOffset = timeOffset
         self.event_info = event_info
         
 
     def __repr__(self):
-        return '<Heatmap %r>' % self.uuid
+        return '<Heatmap %r>' % self.id
 
 class Recordings (db.Model):
     __tablename__ = "recordings"
@@ -238,3 +247,22 @@ class Sessionuser (db.Model):
 
     def __repr__(self):
         return '<Sessionuser %r>' % self.uuid
+
+
+class Task(db.Model):
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
+    session_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
+    complete = db.Column(db.Boolean, default=False)
+
+    def get_rq_job(self):
+        try:
+            rq_job = rq.job.Job.fetch(self.id, connection=app.redis)
+        except (redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
+            return None
+        return rq_job
+
+    def get_progress(self):
+        job = self.get_rq_job()
+        return job.meta.get('progress', 0) if job is not None else 100
