@@ -2,7 +2,9 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from app.models import Users as UsersModel, Teams as TeamsModel, \
-    Organizations as OrganizationsModel
+    Organizations as OrganizationsModel, Sessions as SessionsModel, \
+        Projects as ProjectsModel, Heatmaps as HeatmapsModel, \
+            Recordings as RecordingsModel, Views as ViewsModel, Sessionuser as SessionusersModel
 
 class Users(SQLAlchemyObjectType):
    class Meta:
@@ -20,5 +22,31 @@ class Teams(SQLAlchemyObjectType):
        model = TeamsModel
        interfaces = (relay.Node,)
 
+class Sessions(SQLAlchemyObjectType):
+   class Meta:
+       model = SessionsModel
+       interfaces = (relay.Node,)
+
+class Projects(SQLAlchemyObjectType):
+   class Meta:
+       model = ProjectsModel
+       interfaces = (relay.Node,)
+
+class Heatmaps(SQLAlchemyObjectType):
+   class Meta:
+       model = HeatmapsModel
+       interfaces = (relay.Node,)
+class Recordings(SQLAlchemyObjectType):
+   class Meta:
+       model = RecordingsModel
+       interfaces = (relay.Node,)
+class Views(SQLAlchemyObjectType):
+   class Meta:
+       model = ViewsModel
+       interfaces = (relay.Node,)
+class Sessionusers(SQLAlchemyObjectType):
+   class Meta:
+       model = SessionusersModel
+       interfaces = (relay.Node,)
 class OrgInput(graphene.InputObjectType):
    name = graphene.String()

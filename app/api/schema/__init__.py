@@ -1,3 +1,5 @@
+from os import name
+import uuid
 from flask_restx.inputs import iso8601interval
 from app.api import apisec
 from flask_restx import fields
@@ -19,7 +21,7 @@ appinfo = apisec.model('Info', {
 })
 
 logindata = apisec.model('Login', {
-    'firstname': fields.String(required=True, max_length=64, description='Username of account or business name', example='john'),
+    'email': fields.String(required=True, max_length=64, description='Email of account or business name', example='john@acmecorp.com'),
     'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********')
 })
 
@@ -142,8 +144,31 @@ teamdata = apisec.model('Teamdata', {
     'updated_at': fields.DateTime()
 })
 
-organizationdata = apisec.model('Organizationdata', {
+putorganizationdata = apisec.model('putOrganizationdata', {
     'uuid': fields.String(max_length=60, description='object if of the organization'),
     'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='Acmecorp'),
     'updated_at': fields.DateTime()
+})
+
+getorganizationdata = apisec.model('getOrganizationdata', {
+    'uuid': fields.String(max_length=60, description='object if of the organization'),
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='Acmecorp'),
+    'updated_at': fields.DateTime()
+})
+
+postorganizationdata = apisec.model('postOrganizationdata', {
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='Acmecorp'),
+    'updated_at': fields.DateTime()
+})
+returnsessionuser = apisec.model('returnsessionuser', {
+    'uuid': fields.String(required=True, max_length=64, description='Name of business or organization', example='iosfjnjbkamdfjjsfjk'),
+    'name': fields.String(required=True, max_length=64, description='Name of business or organization', example='iosfjnjbkamdfjjsfjk'),
+    'email': fields.String(required=True, max_length=64, description='Name of business or organization', example='iosfjnjbkamdfjjsfjk')
+})
+
+returnsession = apisec.model('returnsession', {
+    'uuid': fields.String(required=True, max_length=64, description='Name of business or organization', example='iosfjnjbkamdfjjsfjk'),
+    'ip_address': fields.String(required=True, max_length=64, description='Name of business or organization', example='192.0.0.1'),
+    'projects_id': fields.String(required=True, max_length=64, description='Name of business or organization', example='hskdhfakdhfoiwerknlj'),
+    'session_user': fields.Nested(returnsessionuser)
 })

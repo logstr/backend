@@ -1,5 +1,6 @@
 from functools import wraps
 from flask_restx import Namespace, Resource
+from flask_restx.marshalling import marshal
 from app.api import schema
 from app import db
 from app.models import Users, Projects, Sessions, Sessionuser as SessionuserModel, Organizations, Teams, Heatmaps
@@ -51,7 +52,13 @@ class Session(Resource):
         if uuid:
             sessionuser = SessionuserModel.query.filter_by(uuid=uuid).first()
             user_sessions = Sessions.query.filter_by(sessions_user_id = sessionuser.id).all()
-            return user_sessions, 200
+            if user_sessions:
+                return user_sessions, 200
+            else:
+                return {
+                    'result': 'No data',
+                    'status': False
+                }, 200
         else:
             return {
                 'result': 'No data',
@@ -61,13 +68,12 @@ class Session(Resource):
     # post method
     @session.doc(description='This route is to add a new session to the db.')
     @session.expect(schema.sessiondata)
-    @token_required
     def post(self):
         postdata = request.get_json()
         if postdata:
             username = postdata['username'] if 'username' in postdata else None
             email = postdata['emailaddress'] if 'emailaddress' in postdata else None
-            ip = postdata['ip'] if 'ip' in postdata else None
+            ip = request.remote_addr
             device = postdata['device'] if 'device' in postdata else None
             project_id = postdata['project_id'] if 'project_id' in postdata else None
             startTime = postdata['startTime'] if 'startTime' in postdata else None
@@ -84,7 +90,8 @@ class Session(Resource):
                     db.session.commit()
                     return {
                         'result': 'user found',
-                        'data': newsession.uuid,
+                        'session': newsession.uuid,
+                        'sessionuser': marshal(user, schema.returnsessionuser),
                         'status': True
                     }, 200
                 else:
@@ -180,7 +187,13 @@ class Sessionproject(Resource):
         if project_id:
             project = Projects.query.filter_by(uuid=project_id).first()
             project_sessions = Sessions.query.filter_by(projects_id=project.id).all()
-            return project_sessions, 200
+            if project_sessions:
+                return project_sessions, 200
+            else:
+                return {
+                    'result': 'No data',
+                    'status': False
+                }
         else:
             return {
                 'result': 'No data',

@@ -26,9 +26,8 @@ class Login(Resource):
     def post(self):
         postdata = request.get_json()
         if postdata:
-            firstname= postdata['firstname']
+            firstname= postdata['email']
             password = postdata['password']
-
             user = Users.query.filter((Users.first_name == firstname.lower()) | (Users.emailaddress == firstname.lower())).first()
             if user:
                 if user.verify_password(password):

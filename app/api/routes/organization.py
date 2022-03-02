@@ -37,14 +37,22 @@ path='/org')
 
 
 @org.doc(security='KEY')
-@org.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' },
-    params= { 'id': 'ID of the site to view heatmap data'})
+@org.doc(
+    responses={ 
+        200: 'OK successful', 
+        201: 'Creation successful', 
+        301: 'Redirrect', 
+        400: 'Invalid Argument', 
+        401: 'Forbidden Access', 
+        500: 'Mapping Key Error or Internal server error' 
+        })
 @org.route('/')
 class Organization(Resource):
     # get method
     @org.doc(description='This route is to get all or one of the organizarions from the db. Passing an id will \
-        return a particular organization with that id else it will return all organizations belonging to the user.')
-    @org.marshal_with(schema.organizationdata)
+        return a particular organization with that id else it will return all organizations belonging to the user.',\
+            params= { 'id': 'ID of the organization'})
+    @org.marshal_with(schema.getorganizationdata)
     @token_required
     def get(self):
         id = request.args.get('id')
@@ -52,7 +60,7 @@ class Organization(Resource):
         tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
         user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         if id:
-            organization = user.organizations.query.filter_by(uuid=id).first()
+            organization = Organizations.query.filter_by(uuid=id).first()
             return organization, 200
         else:
             organization = user.organizations.all()
@@ -60,7 +68,7 @@ class Organization(Resource):
 
     # post method
     @org.doc(description='This route is to add a new organization to the db.')
-    @org.expect(schema.organizationdata)
+    @org.expect(schema.postorganizationdata)
     @token_required
     def post(self):
         postdata = request.get_json()
@@ -80,7 +88,7 @@ class Organization(Resource):
 
     # patch method
     @org.doc(description='This route is to update an existing organization in the db.')
-    @org.expect(schema.organizationdata)
+    @org.expect(schema.putorganizationdata)
     @token_required
     def put(self):
         postdata = request.get_json()
@@ -114,7 +122,8 @@ class Organization(Resource):
 
     # delete method
     @org.doc(description='This route is to delete an organization from the db. Passing an id will \
-        delete the particular organization with that id else it will return an error.')
+        delete the particular organization with that id else it will return an error.', \
+            params= { 'id': 'ID of the organization'})
     @token_required
     def delete(self):
         id = request.args.get('id')

@@ -23,7 +23,7 @@ class Users (db.Model):
     password = db.Column(db.String(256))
     first_name = db.Column(db.String(30))
     last_name = db.Column(db.String(30))
-    ptofile_pic = db.Column(db.String(80))
+    profile_pic = db.Column(db.String(80))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
@@ -247,7 +247,6 @@ class Sessionuser (db.Model):
 
     def __repr__(self):
         return '<Sessionuser %r>' % self.uuid
-
 
 class Task(db.Model):
     id = db.Column(db.String(36), primary_key=True)

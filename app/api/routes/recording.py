@@ -65,7 +65,6 @@ class Record(Resource):
     # Post method
     @record.doc(description='This route is to put session recorded data into the database')
     @record.expect(schema.postrecordingdata)
-    @token_required
     def post(self):
         postdata = request.get_json()
         if postdata:
@@ -74,6 +73,7 @@ class Record(Resource):
             session = Sessions.query.filter_by(uuid=session_uuid).first()
             if session:
                 session.launch_insert('addrecord', postdata, session.id)
+                session.launch_insert('addheat', postdata, session.id)
                 return {
                     'result': 'recording saved',
                     'status': True

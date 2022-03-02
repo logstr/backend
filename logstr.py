@@ -1,16 +1,18 @@
 '''
 App entry point
 '''
-from datetime import time, timedelta
+from datetime import time, timedelta, datetime
 from sys import version
 from time import sleep
 from flask import redirect, url_for, request, session, jsonify
 from flask.templating import render_template
-from app import create_app, graphql, sio, oauth
+import jwt
+from app import create_app, graphql, sio, oauth, db
 from flask_graphql import GraphQLView
 from app.graphql.schema import schema
 from app.graphql.template import TEMPLATE, GRAPHIQL_VERSION
 from app.jobs.job import send_email
+from app.models.core import Users
 
 app = create_app('dev')
 
@@ -37,7 +39,7 @@ def docs():
 @app.route('/email')
 def email():
     send_email('Weekly Web Reports for Logstr app',
-                sender=app.config['ADMINS'][0], recipients=['das.sanctity.ds@gmail.com'],
+                sender=app.config['ADMINS'][0], recipients=['touchone0001@gmail.com'],
                 text_body=render_template('report.txt'),
                 html_body=render_template('report.html'),
                 attachments=None,
@@ -56,12 +58,57 @@ def authorized():
             request.args['error_reason'],
             request.args['error_description']
         )
-    google_token = (resp['access_token'], '')
+    session['google_token'] = (resp['access_token'], '')
     me = google.get('userinfo')
-    return jsonify({
-        "data": me.data,
-        "google_token": google_token
-        })
+    data = me.data
+    if me:
+        firstname = data['given_name']
+        lastname = data['family_name']
+        email = data['email']
+        number = None
+        password = data['id']
+        team = None
+        organization = None
+
+        existing_user = Users.query.filter_by(emailaddress=email).first()
+        if existing_user:
+            authtoken = jwt.encode(
+                {
+                    'user': existing_user.first_name,
+                    'uuid': existing_user.uuid,
+                    'exp': datetime.utcnow() + timedelta(days=7),
+                    'iat': datetime.utcnow()
+                },
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+            string_token = str(authtoken)
+            return {
+                'result': 'Welcome ' + firstname,
+                'token': string_token,
+                'status': True
+            }, 201
+        else:
+            user = Users(email, number, password, firstname, lastname, \
+                    profile_pic=data['picture'], update_at=None, teams_id=team, organizations_id=organization)
+            db.session.add(user)
+            db.session.commit()
+            authtoken = jwt.encode(
+                {
+                    'user': user.first_name,
+                    'uuid': user.uuid,
+                    'exp': datetime.utcnow() + timedelta(days=7),
+                    'iat': datetime.utcnow()
+                },
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+            string_token = str(authtoken)
+            return {
+                'result': 'Welcome ' + user.first_name,
+                'token': string_token,
+                'status': True
+            }, 201
 
 @google.tokengetter
 def get_google_oauth_token():
