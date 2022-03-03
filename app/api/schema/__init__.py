@@ -21,7 +21,7 @@ appinfo = apisec.model('Info', {
 })
 
 logindata = apisec.model('Login', {
-    'email': fields.String(required=True, max_length=64, description='Email of account or business name', example='john@acmecorp.com'),
+    'email': fields.String(required=True, max_length=64, description='Email of account or business name', example='john@acme.org'),
     'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********')
 })
 

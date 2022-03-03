@@ -136,3 +136,24 @@ class Userteam(Resource):
         else:
             team = user.teams.all()
             return team, 200
+
+@appuser.doc(security='KEY')
+@appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
+@appuser.route('/user/current')
+class Usercurrent(Resource):
+
+    @appuser.doc(description='This route is to get current user details from DB. It can queried to get more user details not available\
+        in token. It requires authentication.')
+    @appuser.marshal_with(schema.userdata)
+    @token_required
+    def get(self):
+        token = request.headers['auth-token']
+        tokendata = jwt.decode(token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
+        user = Users.query.filter_by(uuid=tokendata['uuid']).first()
+        if user:
+            return user, 200
+        else:
+            return {
+                'result': 'No user found',
+                'status': False
+            }, 200
