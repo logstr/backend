@@ -139,7 +139,7 @@ class Userteam(Resource):
 
 @appuser.doc(security='KEY')
 @appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
-@appuser.route('/user/current')
+@appuser.route('/current')
 class Usercurrent(Resource):
 
     @appuser.doc(description='This route is to get current user details from DB. It can queried to get more user details not available\
