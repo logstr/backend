@@ -124,7 +124,7 @@ app.add_url_rule('/api/graphql', view_func=GraphQLView.as_view(
 ))
 
 if __name__ == "__main__":
-    print(logstr.format('📦  LOGSTR API','🚒 Ran system checks','[+] Starting api ...'))
+    print(logstr.format('LOGSTR API','[+] Ran system checks','[+] Starting api ...'))
     sio.run(
         app = app,
         host=app.config.get('HOST'),
