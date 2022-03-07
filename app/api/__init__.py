@@ -120,6 +120,13 @@ def token_required(f):
     return decorated
 
 @apisec.documentation
+@apisec.vendor({
+    'logo': {
+      'url': 'https://redocly.github.io/redoc/example-logo.png',
+      'backgroundColor': '#FFFFFF',
+      'altText': 'Example logo'
+    }
+})
 def docs():
     return render_template('redoc.html')
 
@@ -131,11 +138,11 @@ class appinfo(Resource):
     @info.marshal_with(schema.appinfo)
     def get(self):
         app = {
-            'name':'Bevy',
-            'version': 1.0,
+            'name':'Logstr api',
+            'version': '0.0.1',
             'date': datetime.utcnow(),
-            'author': 'Leslie Etubo T.',
-            'description': 'This is an API to interact with the bevy application'
+            'author': 'Leslie Etubo T., Gaston Nkoh C.',
+            'description': 'This is an API to interact with the logstr application'
         }
         return app
         

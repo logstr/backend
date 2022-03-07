@@ -1,11 +1,11 @@
+import imp
 from app import db
+from time import time
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-import uuid, enum
 from flask import current_app as app
-import redis
-import rq
+import redis, rq, jwt, uuid, enum
 
 
 
@@ -47,6 +47,26 @@ class Users (db.Model):
         
     def verify_password(self, password):
         return check_password_hash(self.password, password)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return Users.query.get(id)
+
+    def send_reset(self, name, *args, **kwargs):
+        passivesend = app.high_queue.enqueue('app.jobs.job.' + name, *args, **kwargs)
+        task = Task(id=passivesend.get_id(), name='sendreset', description='Sends a reset password email', session_id=self)
+        db.session.add(task)
+        return task
         
     def __repr__(self):
         return '<User %r>' % self.emailaddress

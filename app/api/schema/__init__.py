@@ -25,6 +25,12 @@ logindata = apisec.model('Login', {
     'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********')
 })
 
+resetdata = apisec.model('Reset', {
+    'email': fields.String(required=True, max_length=64, description='Email of account or business name', example='john@acme.org'),
+    'password': fields.String(required=True, max_length=60, description='User password of the associated username', example='**********'),
+    'token': fields.String(required=True, description='`token` sent to email', example='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ey...')
+})
+
 signupdata = apisec.model('Signup', {
     'firstname': fields.String(required=True, max_length=64, description='firstname of account or business name', example='john'),
     'lastname': fields.String(required=True, max_length=64, description='lastname of account or business name', example='doe'),

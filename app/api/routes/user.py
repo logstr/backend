@@ -10,6 +10,7 @@ from flask import current_app as app
 from flask import request
 from dateutil import parser
 from sqlalchemy.orm.attributes import flag_modified
+from werkzeug.security import generate_password_hash
 
 
 def token_required(f):
@@ -152,6 +153,64 @@ class Usercurrent(Resource):
         user = Users.query.filter_by(uuid=tokendata['uuid']).first()
         if user:
             return user, 200
+        else:
+            return {
+                'result': 'No user found',
+                'status': False
+            }, 200
+
+
+@appuser.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
+@appuser.route('/resetpassword')
+class Userreset(Resource):
+
+    @appuser.doc(description='This route is to get current user and issues a reset email. This email has an expiry date of `5 minutes` and \
+        needs to be be responded to without delay.', params= { 'email': 'email of the person or business'})
+    def get(self):
+        email = request.args.get('email')
+        user = Users.query.filter_by(emailaddress = email).first()
+        if user:
+            user.send_reset('send_password_reset_email', user.emailaddress)
+            return {
+                'result': 'Email sent',
+                'status': True
+            }, 200
+        else:
+            return {
+                'result': 'No user found',
+                'status': False
+            }, 200
+
+    @appuser.doc(description='This route is to get current user and issues a reset email. This email has an expiry date of `5 minutes` and \
+        needs to be be responded to without delay.')
+    @appuser.expect(schema.resetdata)
+    def post(self):
+        postdata = request.get_json()
+        if postdata:
+            email = postdata['email']
+            password = postdata['password']
+            token = postdata['token']
+            user = Users.query.filter_by(emailaddress = email).first()
+            if user:
+                userpass = user.verify_reset_password_token(token)
+                if userpass:
+                    userpass.password = generate_password_hash(password)
+                    db.session.add(user)
+                    db.session.commit()
+                    return {
+                        'result': 'Password changed',
+                        'status': True
+                    }, 200
+                else:
+                    return {
+                        'result': 'No user found or link expired',
+                        'status': False
+                    }, 200
+            else:
+                return {
+                    'result': 'No user found',
+                    'status': False
+                }, 200
         else:
             return {
                 'result': 'No user found',

@@ -1,5 +1,5 @@
-from app.models import Recordings, Heatmaps
-from flask import current_app as app
+from app.models import Recordings, Heatmaps, Users
+from flask import current_app as app, render_template
 from flask_mail import Message
 from app import db, create_app, mail
 import json
@@ -26,7 +26,6 @@ def addrecord(postdata, session):
     )
     db.session.commit()
     return session
-
 
 def addheat(postdata, session):
     for i in json.loads(postdata['recdata'])['recordings']:
@@ -57,9 +56,19 @@ def addheat(postdata, session):
     db.session.commit()
     return session
 
+def send_password_reset_email(email):
+    user = Users.query.filter_by(emailaddress=email).first()
+    token = user.get_reset_password_token()
+    send_email('Logstr Password Reset',
+               sender=app.config['ADMINS'][0],
+               recipients=[user.emailaddress],
+               text_body=render_template('reset_email/resetpassword.txt',
+                                         user=user, token=token),
+               html_body=render_template('reset_email/resetpassword.html',
+                                         user=user, token=token))
 
 def send_email(subject, sender, recipients, text_body, html_body,
-               attachments=None, sync=False):
+               attachments=None, sync=True):
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
@@ -70,4 +79,4 @@ def send_email(subject, sender, recipients, text_body, html_body,
         mail.send(msg)
     else:
         Thread(target=send_async_email,
-            args=(app._get_current_object(), msg)).start()
+            args=(app, msg)).start()
