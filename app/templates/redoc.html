@@ -4,57 +4,72 @@
     <title>Logstr - Docs</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link
-      href="https://fonts.googleapis.com/css?family=Nunito:300,400,700|Raleway:300,400,700"
-      rel="stylesheet">
-      <style>
-        * {
-          font: 'Nunito' !important; /* <-- fonts */
-        }
-        body {
-          margin: 0;
-          padding: 0;
-        }
-        .hNbBJd{
-          display: none;
-        }
-        .sc-cKZHah {
-          top: 72px !important;
-        }
-        .duZDU {
-          display: none !important;
-        }
-        .sc-eishCr {
-          top: 70px !important;
-          height: calc(-70px + 100vh) !important;
-        }
-        h3 {
-          margin-top: 10px !important;
-          font-size: 1rem !important;
-        }
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,700|Raleway:300,400,700" rel="stylesheet">
+    <style>
+      * {
+        font: 'Nunito' !important; /* <-- fonts */
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .hNbBJd{
+        display: none;
+      }
+      .sc-cKZHah {
+        top: 72px !important;
+      }
+      .duZDU {
+        display: none !important;
+      }
+      .sc-eishCr {
+        top: 70px !important;
+        height: calc(-70px + 100vh) !important;
+      }
+      h3 {
+        margin-top: 10px !important;
+        font-size: 1rem !important;
+      }
+      .gHEtUc {
+        text-align: center;
+      }
+      .dVRMhB {
+        display: inline-block;
+      }
+      .dQHsCA {
+        max-height: 260px;
+        max-width: 260px;
+        padding: 2px;
+        width: 100%;
+        display: block;
+      }
+      .cvHNsH * {
+        box-sizing: border-box;
+      }
     </style>
   </head>
   <body>
     <div id="redoc-container"></div>
     <script src="/static/js/redoc.min.js"> </script>
     <script>
-        RedoclyReferenceDocs.init('/api/swagger.json',
+      RedoclyReferenceDocs.init('/api/swagger.json',
         {
-            scrollYOffset: 50,
-            showConsole: true,
-            hideDownloadButton: true,
-            hideLogo: false,
-            generateCodeSamples: {
-              languages: [{ lang: 'curl' }, 
-                { lang: 'Node.js' }, 
-                { lang: 'JavaScript', label: 'JS' },
-                { lang: 'Python', label: 'Python' },
-                { lang: 'C#', label: 'C#' },
-                { lang: 'Java', label: 'Java' }
-              ],
-              skipOptionalParameters: true,
-            },
-        }, document.getElementById('redoc-container'))
+          scrollYOffset: 50,
+          showConsole: true,
+          hideDownloadButton: true,
+          hideLogo: false,
+          generateCodeSamples: {
+            languages: [{ lang: 'curl' }, 
+              { lang: 'Node.js' }, 
+              { lang: 'JavaScript', label: 'JS' },
+              { lang: 'Python', label: 'Python' },
+              { lang: 'C#', label: 'C#' },
+              { lang: 'Java', label: 'Java' }
+            ],
+            skipOptionalParameters: true,
+          },
+        },document.getElementById('redoc-container')
+      );
     </script>
   </body>
 </html>

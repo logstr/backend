@@ -27,6 +27,8 @@ flask-restx = "*"
 rq-dashboard = "*"
 psycopg2-binary = "*"
 flask-mail = "*"
+stripe = "*"
+markupsafe = "==2.0.1"
 
 [dev-packages]
 

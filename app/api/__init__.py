@@ -4,9 +4,8 @@ Api related resources
 
 from datetime import datetime
 import app
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, render_template, request
 from flask_restx import Api, Resource
-from flask import Blueprint, render_template, request
 from flask_cors import CORS
 from functools import wraps
 from app import db, sio
@@ -36,7 +35,7 @@ authorizations={
 }
 
 api = Blueprint('api', __name__, template_folder = '../templates')
-apisec = Api( app=api, doc='/redoc', version='0.0.1',title='Logstr Api', \
+apisec = Api( app=api, doc='/redoc', version='0.0.1', title='Logstr Api', \
 description='''Get the current weather, daily forecast for 16 days, and a
     three-hour-interval forecast for 5 days for your city. Helpful stats,
     graphics, and this day in history charts are available for your reference.
@@ -120,20 +119,19 @@ def token_required(f):
     return decorated
 
 @apisec.documentation
-@apisec.vendor({
-    'logo': {
-      'url': 'https://redocly.github.io/redoc/example-logo.png',
-      'backgroundColor': '#FFFFFF',
-      'altText': 'Example logo'
-    }
-})
 def docs():
     return render_template('redoc.html')
-
 
 @info.doc(responses={ 201: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error' })
 @info.route('/')
 class appinfo(Resource):
+    @info.vendor({
+        "x-logo": {
+            "url": "https://redocly.github.io/redoc/petstore-logo.png",
+            "backgroundColor": "#FFFFFF",
+            "altText": "Petstore logo"
+        }
+    })
     @info.doc(description='Get\'s app info')
     @info.marshal_with(schema.appinfo)
     def get(self):

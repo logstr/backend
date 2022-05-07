@@ -37,8 +37,10 @@ def create_app(configname):
     CORS(app)
 
     from app.api import api as api_blueprint
+    from app.webhook import webhook as webhook_blueprint
 
     app.register_blueprint(api_blueprint, url_prefix='/api')
+    app.register_blueprint( webhook_blueprint, url_prefix='/webhook')
     app.register_blueprint(rq_dashboard.blueprint, url_prefix="/api/rq")
 
 
