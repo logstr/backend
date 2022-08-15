@@ -14,7 +14,7 @@ class UsersSchema(ma.SQLAlchemySchema):
 
 appinfo = apisec.model('Info', {
     'name': fields.String,
-    'version': fields.Integer,
+    'version': fields.String,
     'date': fields.String,
     'author': fields.String,
     'description': fields.String

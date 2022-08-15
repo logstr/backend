@@ -1,0 +1,49 @@
+version: '3.6'
+
+services:
+  api:
+    build: .
+    depends_on:
+      - db
+      - cache
+    environment:
+      STAGE: test
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://test:test@db/test
+    env_file:
+      - ./.env
+    networks:
+      - default
+    links:
+      - db
+      - cache
+    ports:
+      - 6500:5000
+    restart: always
+
+  db:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Geronimo
+      POSTGRES_DB: leslie
+    image: postgres:latest
+    networks:
+      - default
+    ports:
+      - 5405:5432
+    restart: always
+
+
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning
+  
+  rq:
+    build: ./worker
+    depends_on:
+      - cache
+    command: rq worker -u redis://cache:6379 high 
+    links:
+      - cache

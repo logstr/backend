@@ -2,6 +2,7 @@
 /data
 /flask-zipkin
 /client
+/apiserver
 Pipfile.lock
 .env
 *.pyc

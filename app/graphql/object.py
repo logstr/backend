@@ -4,7 +4,9 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from app.models import Users as UsersModel, Teams as TeamsModel, \
     Organizations as OrganizationsModel, Sessions as SessionsModel, \
         Projects as ProjectsModel, Heatmaps as HeatmapsModel, \
-            Recordings as RecordingsModel, Views as ViewsModel, Sessionuser as SessionusersModel
+            Recordings as RecordingsModel, Views as ViewsModel, Sessionuser as SessionusersModel, \
+                Task as TaskModel, Subscriptions as SubscriptionsModel, Coupon as CouponModel, CreditCard as CreditcardModel, \
+                    Invoice as InvoiceModel
 
 class Users(SQLAlchemyObjectType):
    class Meta:
@@ -47,6 +49,26 @@ class Views(SQLAlchemyObjectType):
 class Sessionusers(SQLAlchemyObjectType):
    class Meta:
        model = SessionusersModel
+       interfaces = (relay.Node,)
+class Coupon(SQLAlchemyObjectType):
+   class Meta:
+       model = CouponModel
+       interfaces = (relay.Node,)
+class Invoice(SQLAlchemyObjectType):
+   class Meta:
+       model = InvoiceModel
+       interfaces = (relay.Node,)
+class Creditcard(SQLAlchemyObjectType):
+   class Meta:
+       model = CreditcardModel
+       interfaces = (relay.Node,)
+class Tasks(SQLAlchemyObjectType):
+   class Meta:
+       model = TaskModel
+       interfaces = (relay.Node,)
+class Subscriptions(SQLAlchemyObjectType):
+   class Meta:
+       model = SubscriptionsModel
        interfaces = (relay.Node,)
 class OrgInput(graphene.InputObjectType):
    name = graphene.String()

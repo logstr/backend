@@ -15,6 +15,7 @@ from flask import request
 
 
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -32,21 +33,23 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-payment = Namespace('Billing & Payment', \
+feedback = Namespace('ML Feedback Analysis', \
 description='This namespace contains heatmap manipulation routes. It requires authentication to access \
     with the `token` sent from the api response which can be found in the `authentication` namespace.', \
-path='/payment')
+path='/feedback')
 
-@payment.doc(security='KEY')
-@payment.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
-@payment.route('/')
-class Payment(Resource):
+
+
+@feedback.doc(security='KEY')
+@feedback.doc(responses={ 200: 'OK successful', 201: 'Creation successful', 301: 'Redirrect', 400: 'Invalid Argument', 401: 'Forbidden Access', 500: 'Mapping Key Error or Internal server error' })
+@feedback.route('/')
+class Feeedback(Resource):
     # get method
-    @payment.doc(description='This route gets all the heatings of a particular session. It isn\'t \
+    @feedback.doc(description='This route gets all the heatings of a particular session. It isn\'t \
         parginated so this may return a bulky result or may be s little slow to return if data is more \
             than `500` results. If you want a parginated result, see the other get route.',\
             params={'type': 'click'})
-    @payment.marshal_with(schema.getheatdata)
+    @feedback.marshal_with(schema.getheatdata)
     @token_required
     def get(self):
         type =  request.args.get('type')
@@ -60,8 +63,8 @@ class Payment(Resource):
             }, 200
 
     # Post method
-    @payment.doc(description='This route is to put session heated data into the database')
-    @payment.expect(schema.postrecordingdata)
+    @feedback.doc(description='This route is to put session heated data into the database')
+    @feedback.expect(schema.postrecordingdata)
     @token_required
     def post(self):
         postdata = request.get_json()
@@ -84,7 +87,3 @@ class Payment(Resource):
             'result': 'Invalid data',
             'status': False
         }, 200
-
-
-# complete payment api and test
-# https://github.com/nickjj/build-a-saas-app-with-flask/blob/v1-screencasts/catwatch/blueprints/billing/views/billing.py

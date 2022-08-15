@@ -81,7 +81,8 @@ path='/')
 
 from . import schema
 from .routes import auth, heat, org, appuser, \
-    team, project, view, sessionuser, record, session
+    team, project, view, sessionuser, record, session, \
+        payment, feedback
 
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
@@ -99,6 +100,8 @@ apisec.add_namespace(view)
 apisec.add_namespace(sessionuser)
 apisec.add_namespace(record)
 apisec.add_namespace(session)
+apisec.add_namespace(payment)
+apisec.add_namespace(feedback)
 
 # The token decorator to protect my routes
 def token_required(f):

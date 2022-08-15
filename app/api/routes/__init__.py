@@ -10,3 +10,4 @@ from .sessionuser  import *
 from .recording import *
 from .session import *
 from .payment import *
+from .feedback import *

@@ -1,29 +1,17 @@
 FROM python:3.8.5
 
 LABEL Author="Logstr Team"
-LABEL E-mail="leslie.etubo@gmail.com, gastonnkh@gmail.com"
+LABEL E-mail="leslie.etubo@gmail.com"
 LABEL version="0.0.1b"
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV FLASK_APP logstr.py
-ENV FLASK_ENV development
-ENV FLASK_DEBUG True
-ENV FLASK_RUN_PORT 5000
 
-WORKDIR /home/logstr
-
-COPY ./requirements.txt /home/logstr/requirements.txt
+WORKDIR /home/rq
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 
-RUN pip install -r ./requirements.txt
+RUN pip install rq
 
-COPY . /home/logstr
-
-EXPOSE 5000
-
-RUN chmod u+x ./boot.sh
-ENTRYPOINT ["./boot.sh"]
+CMD ["rq worker -u redis://localhost:6379 high"]
 # docker system prune (to free all used space)
 # docker ps (to see all docker processes)
 # docker stop [container_name] (to stop a particular container)
